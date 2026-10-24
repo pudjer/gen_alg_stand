@@ -17,8 +17,7 @@ public interface IExecutionContext<TChromosome>
     /// <summary>
     /// Задача, частью которой является вызываемый компонент.
     /// Развязывает компоненты: соседи и целевая функция видны отсюда,
-    /// а не через собственный конструктор. Направление оптимизации
-    /// читается там же — <c>Problem.FitnessFunction.IsMaximization</c>.
+    /// а не через собственный конструктор.
     /// </summary>
     IGeneticProblem<TChromosome> Problem { get; }
 
@@ -39,12 +38,12 @@ public interface IExecutionContext<TChromosome>
     TChromosome? Best { get; }
 
     /// <summary>
-    /// Оценка <see cref="Best"/>. <c>null</c> ровно тогда, когда <c>null</c>
+    /// Потери <see cref="Best"/>. <c>null</c> ровно тогда, когда <c>null</c>
     /// и <see cref="Best"/>: движок обновляет оба значения одним присваиванием
     /// на границе поколения, поэтому состояние «хромосома есть, а оценки нет»
     /// недостижимо.
     /// </summary>
-    double? BestFitness { get; }
+    double? BestLoss { get; }
 
     /// <summary>
     /// История завершённых поколений. Живое представление:

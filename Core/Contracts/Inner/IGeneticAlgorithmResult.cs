@@ -16,10 +16,10 @@ public interface IGeneticAlgorithmResult<TChromosome>
     TChromosome Best { get; }
 
     /// <summary>
-    /// Оценка <see cref="Best"/>. Непуста всегда: популяция непуста,
+    /// Потери <see cref="Best"/>. Непусты всегда: популяция непуста,
     /// значит лучшая хромосома в итоге есть.
     /// </summary>
-    double BestFitness { get; }
+    double BestLoss { get; }
 
     /// <summary>Сколько поколений выполнено. Производное от <see cref="History"/>.</summary>
     int Generations => History.Count;

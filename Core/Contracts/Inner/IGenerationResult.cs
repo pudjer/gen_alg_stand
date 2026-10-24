@@ -12,13 +12,13 @@ public interface IGenerationResult
     int Generation { get; }
 
     /// <summary>
-    /// Лучшее значение приспособленности <b>внутри этого поколения</b>,
+    /// Лучшие (наименьшие) потери <b>внутри этого поколения</b>,
     /// а не накопленный рекорд. Накопленный рекорд доступен как
-    /// <c>IExecutionContext&lt;TChromosome&gt;.BestFitness</c> и
-    /// <c>IGeneticAlgorithmResult&lt;TChromosome&gt;.BestFitness</c>.
+    /// <c>IExecutionContext&lt;TChromosome&gt;.BestLoss</c> и
+    /// <c>IGeneticAlgorithmResult&lt;TChromosome&gt;.BestLoss</c>.
     /// </summary>
-    double BestFitness { get; }
+    double BestLoss { get; }
 
-    /// <summary>Среднее значение приспособленности в поколении.</summary>
-    double AverageFitness { get; }
+    /// <summary>Средние потери в поколении.</summary>
+    double AverageLoss { get; }
 }

@@ -16,15 +16,23 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
 {
     public IGeneticAlgorithmResult<TChromosome> Run(
         IGeneticProblem<TChromosome> problem,
+        GeneticAlgorithmOptions? options = null,
+        IProgress<IGenerationResult>? progress = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(problem);
         ValidateComponents(problem);
 
-        var maximize = problem.FitnessFunction.IsMaximization;
+        options ??= new GeneticAlgorithmOptions();
+        ValidateOptions(options);
+
         var random = new RandomSource();
         var stopwatch = Stopwatch.StartNew();
-        var context = new ExecutionContext<TChromosome>(problem, random, cancellationToken);
+        var context = new ExecutionContext<TChromosome>(
+            problem,
+            options,
+            random,
+            cancellationToken);
 
         var population = CreateInitialPopulation(context);
         var generation = 0;
@@ -32,19 +40,22 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
         // Лучшая хромосома ищется ровно раз на поколение. Поиск нулевого
         // поколения засевает рекорд прогона: второго прохода по той же
         // популяции нет.
-        var bestIndex = FindBestIndex(population, maximize);
+        var bestIndex = FindBestIndex(population);
         var best = population[bestIndex];
-        var bestFitness = population.GetFitness(bestIndex);
-        var generationBest = bestFitness;
+        var bestLoss = population.GetLoss(bestIndex);
+        var generationBest = bestLoss;
 
         while (true)
         {
-            context.Record(new GenerationResult(
+            var snapshot = new GenerationResult(
                 generation,
                 generationBest,
-                Average(population)));
+                Average(population));
 
-            context.Advance(generation, population, best, bestFitness);
+            context.Record(snapshot);
+            progress?.Report(snapshot);
+
+            context.Advance(generation, population, best, bestLoss);
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -59,13 +70,13 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
             population = CreateNextGeneration(context);
             generation++;
 
-            var index = FindBestIndex(population, maximize);
-            generationBest = population.GetFitness(index);
+            var index = FindBestIndex(population);
+            generationBest = population.GetLoss(index);
 
-            if (IsBetter(generationBest, bestFitness, maximize))
+            if (generationBest < bestLoss)
             {
                 best = population[index];
-                bestFitness = generationBest;
+                bestLoss = generationBest;
             }
         }
 
@@ -73,7 +84,7 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
 
         return new GeneticAlgorithmResult<TChromosome>(
             best,
-            bestFitness,
+            bestLoss,
             context.History,
             stopwatch.Elapsed);
     }
@@ -96,24 +107,47 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
         var parents = RequirePopulation(
             problem.Selection.Select(
                 context.Population,
-                problem.FitnessFunction.IsMaximization,
                 context.Random),
             nameof(ISelection<TChromosome>.Select));
 
+        // Элитизм: лучшая особь текущей популяции переходит в следующее
+        // поколение без изменений — ни скрещивание, ни мутация её не касаются.
+        // Хромосома копируется по ссылке: если она ссылочная и операторы
+        // мутируют её на месте, копирование — забота реализации операторов.
+        //
+        // Популяция из одной особи — исключение: элитная позиция совпала бы
+        // с единственной, и поколение застыло бы навсегда (мутация не
+        // вызывалась бы ни разу). Такой слот отдаётся потомку — лучшая особь
+        // прогона и так хранится отдельно в итоговом результате.
         var next = new List<TChromosome>(parents.Count);
 
-        for (var i = 0; i + 1 < parents.Count; i += 2)
+        if (parents.Count > 1)
         {
-            var (first, second) = MaybeCrossover(context, parents[i], parents[i + 1]);
-
-            next.Add(MaybeMutate(context, first));
-            next.Add(MaybeMutate(context, second));
+            next.Add(context.Population[FindBestIndex(context.Population)]);
         }
 
-        // Нечётное число родителей: последний продолжает род через мутацию.
-        if (parents.Count % 2 == 1)
+        // Потомки заполняют все позиции, кроме элитной: размер поколения
+        // остаётся равным числу родителей, а не «родители + элита».
+        var index = 0;
+
+        while (next.Count < parents.Count && index + 1 < parents.Count)
         {
-            next.Add(MaybeMutate(context, parents[^1]));
+            var (first, second) = MaybeCrossover(context, parents[index], parents[index + 1]);
+            index += 2;
+
+            next.Add(MaybeMutate(context, first));
+
+            if (next.Count < parents.Count)
+            {
+                next.Add(MaybeMutate(context, second));
+            }
+        }
+
+        // Непарный остаток (в том числе единственный родитель при популяции
+        // из одной особи) продолжает род через мутацию — иначе он потерялся бы.
+        if (next.Count < parents.Count && index < parents.Count)
+        {
+            next.Add(MaybeMutate(context, parents[index]));
         }
 
         return Build(context, next);
@@ -128,7 +162,7 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
         TChromosome first,
         TChromosome second)
     {
-        if (context.Random.NextDouble() < context.Problem.CrossoverProbability)
+        if (context.Random.NextDouble() < context.Options.CrossoverProbability)
         {
             return context.Problem.Crossover.Crossover(first, second, context.Random);
         }
@@ -143,24 +177,24 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
     private static TChromosome MaybeMutate(
         ExecutionContext<TChromosome> context,
         TChromosome chromosome)
-        => context.Random.NextDouble() < context.Problem.MutationProbability
+        => context.Random.NextDouble() < context.Options.MutationProbability
             ? context.Problem.Mutation.Mutate(chromosome, context.Random)
             : chromosome;
 
-    /// <summary>Оценивает хромосомы и упаковывает их вместе с оценками.</summary>
+    /// <summary>Оценивает хромосомы и упаковывает их вместе с потерями.</summary>
     private static IPopulation<TChromosome> Build(
         ExecutionContext<TChromosome> context,
         IReadOnlyList<TChromosome> chromosomes)
     {
-        var fitnessFunction = context.Problem.FitnessFunction;
-        var fitness = new double[chromosomes.Count];
+        var lossFunction = context.Problem.LossFunction;
+        var loss = new double[chromosomes.Count];
 
         for (var i = 0; i < chromosomes.Count; i++)
         {
-            fitness[i] = fitnessFunction.Evaluate(chromosomes[i]);
+            loss[i] = lossFunction.Evaluate(chromosomes[i]);
         }
 
-        return new Population<TChromosome>(chromosomes, fitness);
+        return new Population<TChromosome>(chromosomes, loss);
     }
 
     /// <summary>
@@ -192,24 +226,35 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
     /// </summary>
     private static void ValidateComponents(IGeneticProblem<TChromosome> problem)
     {
-        ArgumentNullException.ThrowIfNull(problem.FitnessFunction);
+        ArgumentNullException.ThrowIfNull(problem.LossFunction);
         ArgumentNullException.ThrowIfNull(problem.InitialPopulation);
         ArgumentNullException.ThrowIfNull(problem.Selection);
         ArgumentNullException.ThrowIfNull(problem.Crossover);
         ArgumentNullException.ThrowIfNull(problem.Mutation);
         ArgumentNullException.ThrowIfNull(problem.Termination);
+    }
 
-        ValidateProbability(problem.CrossoverProbability, nameof(problem.CrossoverProbability));
-        ValidateProbability(problem.MutationProbability, nameof(problem.MutationProbability));
+    /// <summary>
+    /// Вероятность вне отрезка <c>[0, 1]</c> — ошибка конфигурации прогона,
+    /// а не рантайма: ловим её до старта, а не в середине цикла.
+    /// <c>NaN</c> проверяется отдельно: все сравнения с ним ложны,
+    /// поэтому диапазонная проверка его пропустила бы.
+    /// </summary>
+    private static void ValidateOptions(GeneticAlgorithmOptions options)
+    {
+        ValidateProbability(options.CrossoverProbability, nameof(options.CrossoverProbability));
+        ValidateProbability(options.MutationProbability, nameof(options.MutationProbability));
     }
 
     /// <summary>
     /// Вероятность вне отрезка <c>[0, 1]</c> — ошибка сборки задачи,
     /// а не рантайма: ловим её до старта, а не в середине цикла.
+    /// <c>NaN</c> проверяется отдельно: все сравнения с ним ложны,
+    /// поэтому диапазонная проверка его пропустила бы.
     /// </summary>
     private static void ValidateProbability(double probability, string source)
     {
-        if (probability is < 0 or > 1)
+        if (double.IsNaN(probability) || probability is < 0 or > 1)
         {
             throw new ArgumentOutOfRangeException(
                 source,
@@ -219,17 +264,17 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
     }
 
     /// <summary>
-    /// Индекс лучшей хромосомы поколения. Индекс берётся один раз и затем
-    /// читается в паре <c>population[index]</c> / <c>GetFitness(index)</c>,
+    /// Индекс хромосомы с наименьшими потерями. Индекс берётся один раз и затем
+    /// читается в паре <c>population[index]</c> / <c>GetLoss(index)</c>,
     /// поэтому хромосома и её оценка разойтись не могут.
     /// </summary>
-    private static int FindBestIndex(IPopulation<TChromosome> population, bool maximize)
+    private static int FindBestIndex(IPopulation<TChromosome> population)
     {
         var bestIndex = 0;
 
         for (var i = 1; i < population.Count; i++)
         {
-            if (IsBetter(population.GetFitness(i), population.GetFitness(bestIndex), maximize))
+            if (population.GetLoss(i) < population.GetLoss(bestIndex))
             {
                 bestIndex = i;
             }
@@ -244,12 +289,9 @@ public sealed class GeneticAlgorithm<TChromosome> : IGeneticAlgorithm<TChromosom
 
         for (var i = 0; i < population.Count; i++)
         {
-            sum += population.GetFitness(i);
+            sum += population.GetLoss(i);
         }
 
         return sum / population.Count;
     }
-
-    private static bool IsBetter(double candidate, double incumbent, bool maximize)
-        => maximize ? candidate > incumbent : candidate < incumbent;
 }

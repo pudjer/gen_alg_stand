@@ -15,10 +15,12 @@ internal sealed class ExecutionContext<TChromosome> : IExecutionContext<TChromos
 
     public ExecutionContext(
         IGeneticProblem<TChromosome> problem,
+        GeneticAlgorithmOptions options,
         IRandom random,
         CancellationToken cancellationToken)
     {
         Problem = problem;
+        Options = options;
         Random = random;
         CancellationToken = cancellationToken;
         _history = [];
@@ -27,13 +29,19 @@ internal sealed class ExecutionContext<TChromosome> : IExecutionContext<TChromos
 
     public IGeneticProblem<TChromosome> Problem { get; }
 
+    /// <summary>
+    /// Настройки прогона. Не входят в <see cref="IExecutionContext{TChromosome}"/>:
+    /// критерий останова не должен зависеть от вероятностей операторов.
+    /// </summary>
+    public GeneticAlgorithmOptions Options { get; }
+
     public int Generation { get; private set; }
 
     public IPopulation<TChromosome> Population { get; private set; }
 
     public TChromosome? Best { get; private set; }
 
-    public double? BestFitness { get; private set; }
+    public double? BestLoss { get; private set; }
 
     public IReadOnlyList<IGenerationResult> History => _history;
 
@@ -43,19 +51,19 @@ internal sealed class ExecutionContext<TChromosome> : IExecutionContext<TChromos
 
     /// <summary>
     /// Продвигает контекст к следующей границе поколения. Оба значения —
-    /// <see cref="Best"/> и <see cref="BestFitness"/> — обновляются одним
+    /// <see cref="Best"/> и <see cref="BestLoss"/> — обновляются одним
     /// вызовом, поэтому разъехаться они не могут.
     /// </summary>
     public void Advance(
         int generation,
         IPopulation<TChromosome> population,
         TChromosome best,
-        double bestFitness)
+        double bestLoss)
     {
         Generation = generation;
         Population = population;
         Best = best;
-        BestFitness = bestFitness;
+        BestLoss = bestLoss;
     }
 
     /// <summary>Дописывает снимок поколения в историю.</summary>

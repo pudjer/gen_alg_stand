@@ -8,12 +8,17 @@ namespace Core.Contracts.Outer;
 /// Все компоненты связаны одним типом хромосомы — собрать задачу
 /// из несогласованных частей не получится.
 /// </para>
+/// <para>
+/// Здесь описывается только предметная область. Интенсивность операторов
+/// и прочие настройки прогона — в <see cref="Core.Contracts.Inner.GeneticAlgorithmOptions"/>,
+/// элитизм — политика движка (см. <see cref="Core.Contracts.Inner.IGeneticAlgorithm{TChromosome}"/>).
+/// </para>
 /// </summary>
 /// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
 public interface IGeneticProblem<TChromosome>
     where TChromosome : IChromosome
 {
-    IFitnessFunction<TChromosome> FitnessFunction { get; }
+    ILossFunction<TChromosome> LossFunction { get; }
 
     /// <summary>Откуда берётся первое поколение хромосом.</summary>
     IInitialPopulation<TChromosome> InitialPopulation { get; }
@@ -25,20 +30,4 @@ public interface IGeneticProblem<TChromosome>
     IMutation<TChromosome> Mutation { get; }
 
     ITermination<TChromosome> Termination { get; }
-
-    /// <summary>
-    /// Вероятность скрещивания пары родителей: <c>0…1</c>.
-    /// Движок сам разыгрывает случайность — пользователь только задаёт порог.
-    /// Если кроссовер не выполняется, оба родителя переходят в следующее
-    /// поколение без изменений (кроме возможной мутации).
-    /// </summary>
-    double CrossoverProbability { get; }
-
-    /// <summary>
-    /// Вероятность мутации потомка: <c>0…1</c>.
-    /// Движок сам разыгрывает случайность — пользователь только задаёт порог.
-    /// При <c>0</c> мутации не происходит вовсе, при <c>1</c> — мутирует каждый
-    /// потомок.
-    /// </summary>
-    double MutationProbability { get; }
 }

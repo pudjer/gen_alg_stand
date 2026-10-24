@@ -6,7 +6,7 @@ namespace Core.Algorithm;
 /// <summary>Итог работы алгоритма.</summary>
 internal sealed record GeneticAlgorithmResult<TChromosome>(
     TChromosome Best,
-    double BestFitness,
+    double BestLoss,
     IReadOnlyList<IGenerationResult> History,
     TimeSpan Elapsed) : IGeneticAlgorithmResult<TChromosome>
     where TChromosome : IChromosome;
