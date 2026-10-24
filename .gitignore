@@ -1,0 +1,120 @@
+# ============================================================
+# .NET / C# build artifacts
+# ============================================================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+build/
+bld/
+[Ll]og/
+[Ll]ogs/
+[Ll]og.txt
+*.log
+*.binlog
+*.tlog
+*.lastbuildstate
+*.cache
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.users
+*.rsuser
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+
+# Visual Studio / Rider per-user state
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+*.DotSettings.user
+_ReSharper*/
+*.[Rr]e[Ss]harper
+_TeamCity*
+
+# Build results
+[Dd]ebugPublic/
+[Rr]eleases/
+artifacts/
+publish/
+Publish/
+*.publishproj
+*.nupkg
+*.snupkg
+
+# NuGet
+packages/
+*.nuspec.user
+!.nuget/NuGet.Config
+.nuget/
+*.nuget.props
+*.nuget.targets
+
+# Test results & coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+coverage.*
+*.coverlet.json
+TestResults/
+
+# ASP.NET Core
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+*.ndf
+secrets.json
+appsettings.*.local.json
+
+# Blazor / Web
+*.scssc
+node_modules/
+.bundle/
+wwwroot/dist/
+blazor.boot.json
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editor junk
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+*.bak
+*.orig
+*.tmp
+
+# IDE
+.idea/
+*.iml
