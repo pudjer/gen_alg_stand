@@ -8,29 +8,32 @@ namespace Core.Algorithm;
 /// Обновляется движком на каждой границе поколения; операторы видят
 /// его только для чтения и не должны сохранять ссылку.
 /// </summary>
-internal sealed class ExecutionContext : IExecutionContext
+internal sealed class ExecutionContext<TChromosome> : IExecutionContext<TChromosome>
+    where TChromosome : IChromosome
 {
     private readonly List<IGenerationResult> _history;
 
     public ExecutionContext(
-        IFitnessFunction fitnessFunction,
+        IGeneticProblem<TChromosome> problem,
         IRandom random,
         CancellationToken cancellationToken)
     {
-        IsMaximization = fitnessFunction.IsMaximization;
+        Problem = problem;
         Random = random;
         CancellationToken = cancellationToken;
-        _history = new List<IGenerationResult>();
-        Population = [];
+        _history = [];
+        Population = new Population<TChromosome>([], []);
     }
+
+    public IGeneticProblem<TChromosome> Problem { get; }
 
     public int Generation { get; private set; }
 
-    public bool IsMaximization { get; }
+    public IPopulation<TChromosome> Population { get; private set; }
 
-    public IReadOnlyList<Individual> Population { get; private set; }
+    public TChromosome? Best { get; private set; }
 
-    public Individual? Best { get; private set; }
+    public double? BestFitness { get; private set; }
 
     public IReadOnlyList<IGenerationResult> History => _history;
 
@@ -38,12 +41,21 @@ internal sealed class ExecutionContext : IExecutionContext
 
     public CancellationToken CancellationToken { get; }
 
-    /// <summary>Продвигает контекст к следующей границе поколения.</summary>
-    public void Advance(int generation, IReadOnlyList<Individual> population, Individual? best)
+    /// <summary>
+    /// Продвигает контекст к следующей границе поколения. Оба значения —
+    /// <see cref="Best"/> и <see cref="BestFitness"/> — обновляются одним
+    /// вызовом, поэтому разъехаться они не могут.
+    /// </summary>
+    public void Advance(
+        int generation,
+        IPopulation<TChromosome> population,
+        TChromosome best,
+        double bestFitness)
     {
         Generation = generation;
         Population = population;
         Best = best;
+        BestFitness = bestFitness;
     }
 
     /// <summary>Дописывает снимок поколения в историю.</summary>

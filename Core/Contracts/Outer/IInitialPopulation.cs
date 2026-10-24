@@ -9,11 +9,14 @@ namespace Core.Contracts.Outer;
 /// генерации хромосом — решение задачи, движок их не задаёт и не проверяет.
 /// </para>
 /// </summary>
-public interface IInitialPopulation
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface IInitialPopulation<TChromosome>
+    where TChromosome : IChromosome
 {
     /// <summary>
     /// Создаёт хромосомы первого поколения. Оценку приспособленности
-    /// выполняет движок — возвращать её не нужно.
+    /// выполняет движок — возвращать её не нужно. Случайность берётся
+    /// из общего источника прогона: свой Random заводить не надо.
     /// </summary>
-    IReadOnlyList<IChromosome> Create(IExecutionContext context);
+    IReadOnlyList<TChromosome> Create(IRandom random);
 }

@@ -3,12 +3,15 @@ using Core.Contracts.Inner;
 namespace Core.Contracts.Outer;
 
 /// <summary>
-/// Стратегия скрещивания.
+/// Стратегия скрещивания. На вход и выход идёт тот же тип хромосомы,
+/// что задан задачей — приведений и кастов нет.
 /// </summary>
-public interface ICrossover
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface ICrossover<TChromosome>
+    where TChromosome : IChromosome
 {
-    (IChromosome First, IChromosome Second) Crossover(
-        IChromosome first,
-        IChromosome second,
-        IExecutionContext context);
+    (TChromosome First, TChromosome Second) Crossover(
+        TChromosome first,
+        TChromosome second,
+        IRandom random);
 }

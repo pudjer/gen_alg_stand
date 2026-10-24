@@ -5,7 +5,13 @@ namespace Core.Contracts.Outer;
 /// <summary>
 /// Стратегия мутации.
 /// </summary>
-public interface IMutation
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface IMutation<TChromosome>
+    where TChromosome : IChromosome
 {
-    IChromosome Mutate(IChromosome chromosome, IExecutionContext context);
+    /// <summary>
+    /// Мутирует хромосому. Случайность берётся из общего источника прогона:
+    /// свой Random заводить не надо.
+    /// </summary>
+    TChromosome Mutate(TChromosome chromosome, IRandom random);
 }

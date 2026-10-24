@@ -5,13 +5,18 @@ namespace Core.Contracts.Outer;
 /// <summary>
 /// Стратегия отбора родителей.
 /// </summary>
-public interface ISelection
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface ISelection<TChromosome>
+    where TChromosome : IChromosome
 {
     /// <summary>
     /// Возвращает родителей для следующего поколения. Сколько их будет —
     /// решает сама стратегия: движок не знает размера популяции.
-    /// Направление оптимизации доступно через
-    /// <see cref="IExecutionContext.IsMaximization"/>.
+    /// Всё, что нужно для решения, передаётся аргументами: текущая
+    /// популяция с оценками, направление оптимизации и случайность.
     /// </summary>
-    IReadOnlyList<Individual> Select(IExecutionContext context);
+    IReadOnlyList<TChromosome> Select(
+        IPopulation<TChromosome> population,
+        bool maximize,
+        IRandom random);
 }

@@ -6,9 +6,12 @@ namespace Core.Contracts.Inner;
 /// Внутренний API движка: единственный тип, который нужен вызывающему коду,
 /// чтобы запустить алгоритм.
 /// </summary>
-public interface IGeneticAlgorithm
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface IGeneticAlgorithm<TChromosome>
+    where TChromosome : IChromosome
 {
-    IGeneticAlgorithmResult Run(
-        IGeneticProblem problem,
+    /// <summary>Запускает прогон над задачей с тем же типом хромосомы.</summary>
+    IGeneticAlgorithmResult<TChromosome> Run(
+        IGeneticProblem<TChromosome> problem,
         CancellationToken cancellationToken = default);
 }

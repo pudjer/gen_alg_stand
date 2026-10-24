@@ -5,24 +5,40 @@ namespace Core.Contracts.Outer;
 /// Единственное, что меняется при добавлении новой целевой функции.
 /// <para>
 /// Outer-контракт: реализуется вне движка и подставляется в него.
+/// Все компоненты связаны одним типом хромосомы — собрать задачу
+/// из несогласованных частей не получится.
 /// </para>
 /// </summary>
-public interface IGeneticProblem
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface IGeneticProblem<TChromosome>
+    where TChromosome : IChromosome
 {
-    IFitnessFunction FitnessFunction { get; }
+    IFitnessFunction<TChromosome> FitnessFunction { get; }
 
     /// <summary>Откуда берётся первое поколение хромосом.</summary>
-    IInitialPopulation InitialPopulation { get; }
+    IInitialPopulation<TChromosome> InitialPopulation { get; }
 
-    ISelection Selection { get; }
+    ISelection<TChromosome> Selection { get; }
 
-    ICrossover Crossover { get; }
+    ICrossover<TChromosome> Crossover { get; }
 
-    IMutation Mutation { get; }
+    IMutation<TChromosome> Mutation { get; }
+
+    ITermination<TChromosome> Termination { get; }
 
     /// <summary>
-    /// Критерий останова задачи. Лимит поколений и отмена
-    /// подключаются движком независимо — дублировать их не нужно.
+    /// Вероятность скрещивания пары родителей: <c>0…1</c>.
+    /// Движок сам разыгрывает случайность — пользователь только задаёт порог.
+    /// Если кроссовер не выполняется, оба родителя переходят в следующее
+    /// поколение без изменений (кроме возможной мутации).
     /// </summary>
-    ITermination Termination { get; }
+    double CrossoverProbability { get; }
+
+    /// <summary>
+    /// Вероятность мутации потомка: <c>0…1</c>.
+    /// Движок сам разыгрывает случайность — пользователь только задаёт порог.
+    /// При <c>0</c> мутации не происходит вовсе, при <c>1</c> — мутирует каждый
+    /// потомок.
+    /// </summary>
+    double MutationProbability { get; }
 }

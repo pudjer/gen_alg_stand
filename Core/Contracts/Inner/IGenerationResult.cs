@@ -14,8 +14,8 @@ public interface IGenerationResult
     /// <summary>
     /// Лучшее значение приспособленности <b>внутри этого поколения</b>,
     /// а не накопленный рекорд. Накопленный рекорд доступен как
-    /// <see cref="IExecutionContext.Best"/> и
-    /// <see cref="IGeneticAlgorithmResult.Best"/>.
+    /// <c>IExecutionContext&lt;TChromosome&gt;.BestFitness</c> и
+    /// <c>IGeneticAlgorithmResult&lt;TChromosome&gt;.BestFitness</c>.
     /// </summary>
     double BestFitness { get; }
 

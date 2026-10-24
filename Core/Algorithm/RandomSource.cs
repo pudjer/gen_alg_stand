@@ -9,13 +9,7 @@ using Core.Contracts.Inner;
 /// </summary>
 internal sealed class RandomSource : IRandom
 {
-    private readonly Random _random;
-
-    /// <param name="seed">
-    /// Зерно для воспроизводимых прогонов. <c>null</c> — случайное зерно.
-    /// </param>
-    public RandomSource(int? seed = null)
-        => _random = seed is null ? new Random() : new Random(seed.Value);
+    private readonly Random _random = new();
 
     public double NextDouble() => _random.NextDouble();
 

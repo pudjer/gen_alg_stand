@@ -1,11 +1,11 @@
-using Core.Contracts.Inner;
-
 namespace Core.Contracts.Outer;
 
 /// <summary>
 /// Целевая функция задачи.
 /// </summary>
-public interface IFitnessFunction
+/// <typeparam name="TChromosome">Конкретный тип хромосомы задачи.</typeparam>
+public interface IFitnessFunction<TChromosome>
+    where TChromosome : IChromosome
 {
     /// <summary>
     /// Направление оптимизации. Задаётся функцией, а не прогоном:
@@ -13,5 +13,11 @@ public interface IFitnessFunction
     /// </summary>
     bool IsMaximization { get; }
 
-    double Evaluate(IChromosome chromosome, IExecutionContext context);
+    /// <summary>
+    /// Оценка хромосомы — чистая функция от хромосомы.
+    /// Данные прогона движок не передаёт: если оценке нужны поколение,
+    /// популяция или случайность, реализация сама доставляет их через
+    /// собственные зависимости (конструктор).
+    /// </summary>
+    double Evaluate(TChromosome chromosome);
 }
