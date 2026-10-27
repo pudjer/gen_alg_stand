@@ -7,4 +7,6 @@ public struct GeneticProblem<TChromosome>
     public required ISelection<TChromosome> Selection { get; init; }
     public required ICrossover<TChromosome> Crossover { get; init; }
     public required IMutation<TChromosome> Mutation { get; init; }
+    public required IInitialPopulation<TChromosome> InitialPopulation { get; init; }
+    public required IObserver<TChromosome> Observer { get; init; }
 }
