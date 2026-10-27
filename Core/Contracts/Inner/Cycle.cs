@@ -1,6 +1,6 @@
 namespace Core.Contracts;
 public sealed class GenAlgCycle<TChromosome>
-    where TChromosome : IChromosome
+    where TChromosome : IChromosome<TChromosome>
 {
 
     public required IRandom Random { get; init; }

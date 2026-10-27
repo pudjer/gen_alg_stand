@@ -1,5 +1,6 @@
 namespace Core.Contracts;
 
-public interface IChromosome
+public interface IChromosome<TSelf> where TSelf : IChromosome<TSelf>
 {
+    TSelf Clone();
 }
