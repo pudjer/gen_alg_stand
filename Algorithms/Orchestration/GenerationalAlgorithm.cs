@@ -3,79 +3,101 @@ using Core.Contracts;
 namespace Algorithms.Orchestration;
 
 /// <summary>
-/// A generational genetic algorithm assembled purely from the operators of a
-/// <see cref="GeneticProblem{TChromosome}"/>: selection, crossover, mutation and loss.
+/// A generational genetic algorithm that owns the whole evolution loop and drives it with the
+/// operators carried by a <see cref="GeneticProblem{TChromosome}"/>.
 /// </summary>
 /// <remarks>
-/// The algorithm owns no behaviour of its own beyond scheduling. Elitism is derived from the
-/// problem's <see cref="GeneticProblem{TChromosome}.LossFunction"/>, so every component is taken
-/// from the problem instance supplied by the caller.
+/// <para>
+/// The algorithm only schedules work: it asks the problem for an initial population, then repeatedly
+/// applies selection, crossover and mutation, reporting every generation to the problem's observer.
+/// Elitism is derived from the problem's loss function.
+/// </para>
+/// <para>
+/// Randomness is injected once through the constructor, so a run is fully determined by the seed of
+/// that <see cref="IRandom"/>.
+/// </para>
 /// </remarks>
 /// <typeparam name="TChromosome">The chromosome type operated on by the algorithm.</typeparam>
 public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    private readonly GeneticProblem<TChromosome> _problem;
+    private readonly IRandom _random;
     private readonly GenerationalOptions _options;
-    private int _generation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GenerationalAlgorithm{TChromosome}"/> class.
     /// </summary>
-    /// <param name="problem">The problem whose four operators drive every generation.</param>
+    /// <param name="random">The random source shared by the problem's operators.</param>
     /// <param name="options">Scheduling options; defaults to <see cref="GenerationalOptions.Default"/> when <see langword="null"/>.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="options"/> contains a negative generation limit or elite count.
-    /// </exception>
-    public GenerationalAlgorithm(GeneticProblem<TChromosome> problem, GenerationalOptions? options = null)
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="options"/> contains invalid values.</exception>
+    public GenerationalAlgorithm(IRandom random, GenerationalOptions? options = null)
     {
+        ArgumentNullException.ThrowIfNull(random);
+
         GenerationalOptions resolved = options ?? GenerationalOptions.Default;
+        ArgumentOutOfRangeException.ThrowIfNegative(resolved.MaxGenerations, nameof(options));
+        ArgumentOutOfRangeException.ThrowIfNegative(resolved.EliteCount, nameof(options));
 
-        if (resolved.MaxGenerations < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(options), "MaxGenerations must be non-negative.");
-        }
-
-        if (resolved.EliteCount < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(options), "EliteCount must be non-negative.");
-        }
-
-        _problem = problem;
+        _random = random;
         _options = resolved;
-        _generation = 0;
     }
 
     /// <summary>
-    /// Produces the next generation by running selection, crossover, mutation and elitism.
+    /// Runs the full evolution: builds the initial population, then evolves it for at most
+    /// <see cref="GenerationalOptions.MaxGenerations"/> generations.
     /// </summary>
-    /// <param name="population">The current population to evolve.</param>
-    /// <param name="random">The source of randomness passed to the problem's operators.</param>
-    /// <returns>
-    /// The next generation, or <see langword="null"/> once the generation limit is reached or the
-    /// population is empty.
-    /// </returns>
-    public IReadOnlyList<TChromosome>? Iterate(IReadOnlyList<TChromosome> population, IRandom random)
+    /// <param name="problem">The problem supplying all operators, the initial population and the observer.</param>
+    public void Run(GeneticProblem<TChromosome> problem)
     {
-        ArgumentNullException.ThrowIfNull(population);
-        ArgumentNullException.ThrowIfNull(random);
+        IReadOnlyList<TChromosome> population = problem.InitialPopulation.Create(_random)
+            ?? throw new InvalidOperationException("The initial population must not be null.");
 
-        if (_generation >= _options.MaxGenerations || population.Count == 0)
+        problem.Observer.OnGeneration(population);
+
+        for (int generation = 0; generation < _options.MaxGenerations; generation++)
+        {
+            IReadOnlyList<TChromosome>? next = Step(problem, population, _random);
+            if (next is null)
+            {
+                return;
+            }
+
+            population = next;
+            problem.Observer.OnGeneration(population);
+        }
+    }
+
+    /// <summary>
+    /// Produces one generation from the supplied population.
+    /// </summary>
+    /// <param name="problem">The problem supplying the operators.</param>
+    /// <param name="population">The current population.</param>
+    /// <param name="random">The random source to use for this step.</param>
+    /// <returns>The next generation, or <see langword="null"/> when the population is empty.</returns>
+    /// <remarks>
+    /// This is the unit the island model interleaves; <see cref="Run"/> is a thin loop over it.
+    /// </remarks>
+    internal IReadOnlyList<TChromosome>? Step(
+        GeneticProblem<TChromosome> problem,
+        IReadOnlyList<TChromosome> population,
+        IRandom random)
+    {
+        if (population.Count == 0)
         {
             return null;
         }
 
-        IReadOnlyList<TChromosome> selected = _problem.Selection.Select(population, random);
-        IReadOnlyList<TChromosome> children = _problem.Crossover.Crossover(selected, random);
-        IReadOnlyList<TChromosome> mutated = _problem.Mutation.Mutate(children, random);
-        IReadOnlyList<TChromosome> next = ApplyElitism(population, mutated);
+        IReadOnlyList<TChromosome> selected = problem.Selection.Select(population, random);
+        IReadOnlyList<TChromosome> children = problem.Crossover.Crossover(selected, random);
+        IReadOnlyList<TChromosome> mutated = problem.Mutation.Mutate(children, random);
+        IReadOnlyList<TChromosome> next = ApplyElitism(problem, population, mutated);
 
         if (_options.MaintainPopulationSize && next.Count != population.Count)
         {
             next = Resize(next, population.Count, random);
         }
 
-        _generation++;
         return next;
     }
 
@@ -84,18 +106,19 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
     /// </summary>
     /// <remarks>Chromosomes are immutable, so elites are reused by reference.</remarks>
     private IReadOnlyList<TChromosome> ApplyElitism(
+        GeneticProblem<TChromosome> problem,
         IReadOnlyList<TChromosome> parents,
         IReadOnlyList<TChromosome> offspring)
     {
         int eliteCount = Math.Min(_options.EliteCount, Math.Min(parents.Count, offspring.Count));
-        if (eliteCount <= 0 || offspring.Count == 0)
+        if (eliteCount <= 0)
         {
             return offspring;
         }
 
-        TChromosome[] elites = Best(parents, eliteCount, ascending: true);
+        TChromosome[] elites = PopulationRanking.Best(problem.LossFunction, parents, eliteCount);
         TChromosome[] result = [.. offspring];
-        int[] worst = WorstIndexes(result, eliteCount);
+        int[] worst = PopulationRanking.WorstIndexes(problem.LossFunction, result, eliteCount);
 
         for (int i = 0; i < eliteCount; i++)
         {
@@ -103,51 +126,6 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         }
 
         return result;
-    }
-
-    private TChromosome[] Best(IReadOnlyList<TChromosome> population, int count, bool ascending)
-    {
-        TChromosome[] sorted = [.. population];
-        double[] losses = new double[sorted.Length];
-        for (int i = 0; i < sorted.Length; i++)
-        {
-            losses[i] = _problem.LossFunction.Evaluate(sorted[i]);
-        }
-
-        Array.Sort(losses, sorted);
-
-        if (!ascending)
-        {
-            Array.Reverse(sorted);
-        }
-
-        if (count >= sorted.Length)
-        {
-            return sorted;
-        }
-
-        TChromosome[] best = new TChromosome[count];
-        Array.Copy(sorted, best, count);
-        return best;
-    }
-
-    private int[] WorstIndexes(IReadOnlyList<TChromosome> population, int count)
-    {
-        int[] indexes = new int[population.Count];
-        double[] losses = new double[population.Count];
-
-        for (int i = 0; i < population.Count; i++)
-        {
-            indexes[i] = i;
-            losses[i] = _problem.LossFunction.Evaluate(population[i]);
-        }
-
-        Array.Sort(losses, indexes);
-        Array.Reverse(indexes);
-
-        int[] worst = new int[count];
-        Array.Copy(indexes, worst, count);
-        return worst;
     }
 
     private static IReadOnlyList<TChromosome> Resize(

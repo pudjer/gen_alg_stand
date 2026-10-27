@@ -3,60 +3,44 @@ using Core.Contracts;
 namespace Algorithms.Orchestration;
 
 /// <summary>
-/// Controls how <see cref="IslandModelAlgorithm{TChromosome}"/> splits and connects sub-populations.
+/// Scheduling knobs for <see cref="IslandModelAlgorithm{TChromosome}"/>.
 /// </summary>
-public sealed record IslandOptions
+/// <param name="IslandCount">How many independent sub-populations to evolve in parallel.</param>
+/// <param name="MaxGenerations">The maximum number of generations each island evolves.</param>
+/// <param name="MigrationInterval">
+/// How often, in generations, migrants are exchanged between neighbouring islands.
+/// A value of <c>0</c> or less disables migration.
+/// </param>
+/// <param name="MigrantsPerIsland">How many of the best chromosomes each island sends to its neighbour.</param>
+/// <param name="EliteCount">How many elites each island keeps per generation.</param>
+/// <param name="RandomFactory">
+/// Creates an independent <see cref="IRandom"/> per island. When <see langword="null"/>, seeds are
+/// drawn sequentially from the algorithm's own random source, which keeps runs reproducible.
+/// </param>
+/// <param name="MaxDegreeOfParallelism">
+/// The upper bound on concurrently evolving islands; <c>-1</c> means no limit.
+/// </param>
+public sealed record IslandOptions(
+    int IslandCount = 4,
+    int MaxGenerations = 250,
+    int MigrationInterval = 10,
+    int MigrantsPerIsland = 1,
+    int EliteCount = 1,
+    Func<int, IRandom>? RandomFactory = null,
+    int MaxDegreeOfParallelism = -1)
 {
-    /// <summary>Gets the default options: four islands migrating one individual every ten steps.</summary>
+    /// <summary>Gets a shared default configuration instance.</summary>
     public static IslandOptions Default { get; } = new();
 
-    /// <summary>Gets the number of islands the initial population is split into.</summary>
-    public int IslandCount { get; init; } = 4;
-
-    /// <summary>Gets the number of steps between two migrations. Zero disables migration.</summary>
-    public int MigrationInterval { get; init; } = 10;
-
-    /// <summary>Gets the number of best individuals sent from each island to its neighbour.</summary>
-    public int MigrantsPerIsland { get; init; } = 1;
+    /// <summary>
+    /// Gets a value indicating whether the islands are allowed to run concurrently.
+    /// </summary>
+    internal bool CanRunInParallel => IslandCount > 1;
 
     /// <summary>
-    /// Gets an optional factory that creates one independent random source per island from a seed
-    /// drawn from the algorithm's shared <see cref="IRandom"/>.
+    /// Gets the effective degree of parallelism to hand to <see cref="System.Threading.Tasks.Parallel"/>.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// When this is <see langword="null"/> the islands run sequentially, sharing the single
-    /// <see cref="IRandom"/> supplied to <see cref="IAlgorithm{TChromosome}.Iterate"/>.
-    /// </para>
-    /// <para>
-    /// When it is set and <see cref="IslandCount"/> is greater than one, every island evolves in
-    /// its own worker on the thread pool, using its own random source. Seeds are drawn one at a
-    /// time before the workers start, so a given seeded <see cref="IRandom"/> still produces a
-    /// reproducible run.
-    /// </para>
-    /// <para>
-    /// Enabling this requires the problem's operators
-    /// (<see cref="GeneticProblem{TChromosome}.Selection"/>,
-    /// <see cref="GeneticProblem{TChromosome}.Crossover"/>,
-    /// <see cref="GeneticProblem{TChromosome}.Mutation"/> and
-    /// <see cref="GeneticProblem{TChromosome}.LossFunction"/>) to be stateless, or at least safe
-    /// for concurrent calls. All operators shipped in this project satisfy that.
-    /// </para>
-    /// </remarks>
-    public Func<int, IRandom>? RandomFactory { get; init; }
-
-    /// <summary>
-    /// Gets the maximum number of islands evolved concurrently. Zero or one forces sequential
-    /// execution even when <see cref="RandomFactory"/> is set; a negative value uses
-    /// <see cref="Environment.ProcessorCount"/>.
-    /// </summary>
-    public int MaxDegreeOfParallelism { get; init; } = -1;
-
-    /// <summary>Gets a value indicating whether islands may run on separate workers.</summary>
-    internal bool CanRunInParallel =>
-        RandomFactory is not null && IslandCount > 1 && MaxDegreeOfParallelism != 1;
-
-    /// <summary>Resolves <see cref="MaxDegreeOfParallelism"/> to a concrete positive limit.</summary>
-    internal int ResolvedDegreeOfParallelism =>
-        MaxDegreeOfParallelism < 0 ? Environment.ProcessorCount : Math.Max(1, MaxDegreeOfParallelism);
+    internal int ResolvedDegreeOfParallelism => MaxDegreeOfParallelism <= 0
+        ? Environment.ProcessorCount
+        : Math.Min(MaxDegreeOfParallelism, Environment.ProcessorCount);
 }

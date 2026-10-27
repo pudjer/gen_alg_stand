@@ -3,8 +3,15 @@ using Core.Contracts;
 namespace Algorithms.Selections;
 
 /// <summary>
-/// Selects individuals by fitness-proportionate sampling using inversely scaled loss weights.
+/// Selects individuals by fitness-proportionate sampling, turning losses into weights by linear
+/// inversion within the current population.
 /// </summary>
+/// <remarks>
+/// The loss function is trusted only for its contract: lower is better. No assumption is made about
+/// the sign or scale of the values, so this works for losses that are negative (for example the
+/// negated OneMax count), unbounded, or arbitrary. Weights are derived relative to the population's
+/// own worst and best loss, which keeps the selection pressure independent of the loss scale.
+/// </remarks>
 /// <typeparam name="TChromosome">The chromosome type being evolved.</typeparam>
 public sealed class RouletteWheelSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
@@ -33,17 +40,20 @@ public sealed class RouletteWheelSelection<TChromosome> : ISelection<TChromosome
             return Array.Empty<TChromosome>();
         }
 
-        double[] weights = new double[count];
-        double total = 0;
+        List<TChromosome> result = new(count);
+
+        double[] losses = new double[count];
         for (int i = 0; i < count; i++)
         {
-            double loss = _lossFunction.Evaluate(population[i]);
-            double weight = ComputeWeight(loss);
-            weights[i] = weight;
-            total += weight;
+            losses[i] = _lossFunction.Evaluate(population[i]);
         }
 
-        List<TChromosome> result = new(count);
+        double[] weights = ComputeWeights(losses);
+        double total = 0;
+        for (int i = 0; i < weights.Length; i++)
+        {
+            total += weights[i];
+        }
 
         if (!double.IsFinite(total) || total <= 0)
         {
@@ -77,13 +87,64 @@ public sealed class RouletteWheelSelection<TChromosome> : ISelection<TChromosome
         return result;
     }
 
-    private static double ComputeWeight(double loss)
+    /// <summary>
+    /// Converts losses into positive weights by linear inversion relative to the population's span.
+    /// </summary>
+    /// <remarks>
+    /// An offset of <c>span / count</c> keeps the worst individual selectable, so no chromosome is
+    /// excluded outright. When the span is zero (all losses equal, or non-finite values present) the
+    /// weights are uniform, which degrades gracefully to random selection.
+    /// </remarks>
+    private static double[] ComputeWeights(double[] losses)
     {
-        if (!double.IsFinite(loss) || loss < 0)
+        int count = losses.Length;
+        double[] weights = new double[count];
+
+        double min = double.PositiveInfinity;
+        double max = double.NegativeInfinity;
+
+        for (int i = 0; i < count; i++)
         {
-            return 1.0;
+            double loss = losses[i];
+            if (!double.IsFinite(loss))
+            {
+                return Uniform(count);
+            }
+
+            if (loss < min)
+            {
+                min = loss;
+            }
+
+            if (loss > max)
+            {
+                max = loss;
+            }
         }
 
-        return 1.0 / (1.0 + loss);
+        double span = max - min;
+        if (!(span > 0))
+        {
+            return Uniform(count);
+        }
+
+        double offset = span / count;
+        for (int i = 0; i < count; i++)
+        {
+            weights[i] = (max - losses[i]) + offset;
+        }
+
+        return weights;
+    }
+
+    private static double[] Uniform(int count)
+    {
+        double[] weights = new double[count];
+        for (int i = 0; i < count; i++)
+        {
+            weights[i] = 1.0;
+        }
+
+        return weights;
     }
 }
