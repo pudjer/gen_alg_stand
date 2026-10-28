@@ -1,0 +1,181 @@
+@page
+@model GenAlgStand.Web.Pages.IndexModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Генетический алгоритм";
+}
+
+<div class="layout">
+    <section class="panel">
+        <h1>Генетический алгоритм</h1>
+        <p class="muted">Выберите задачу, задайте параметры, соберите комбинацию модулей и запустите расчёт.</p>
+
+        @if (Model.Error is not null)
+        {
+            <div class="error">@Model.Error</div>
+        }
+
+        <form method="post">
+            <input type="hidden" name="ConfiguredProblemId" value="@Model.ConfiguredProblemId" />
+
+            <div class="field">
+                <label asp-for="ProblemId">Задача</label>
+                <select asp-for="ProblemId" class="wide">
+                    @foreach (var group in Model.Problems.GroupBy(problem => problem.Family))
+                    {
+                        <optgroup label="@group.Key">
+                            @foreach (var problem in group)
+                            {
+                                <option value="@problem.Id" selected="@(problem.Id == Model.ProblemId ? "selected" : null)">@problem.Name</option>
+                            }
+                        </optgroup>
+                    }
+                </select>
+            </div>
+
+            @if (Model.Descriptor is not null && Model.Descriptor.Parameters.Count > 0)
+            {
+                <fieldset>
+                    <legend>Параметры задачи</legend>
+                    @foreach (var parameter in Model.Descriptor.Parameters)
+                    {
+                        <label class="inline">
+                            <span>@parameter.Key</span>
+                            <input type="text"
+                                   name="ProblemParams[@parameter.Key]"
+                                   value="@Model.ProblemValue(parameter.Key)"
+                                   placeholder="по умолчанию"
+                                   autocomplete="off" />
+                        </label>
+                    }
+                </fieldset>
+            }
+
+            <button type="submit" asp-page-handler="Configure" class="secondary">Применить параметры задачи</button>
+
+            @if (Model.Configuration is not null)
+            {
+                <hr />
+
+                @foreach (var axis in Model.Axes)
+                {
+                    <div class="field">
+                        <label>@axis.Title</label>
+                        <select name="ModuleChoice[@axis.Key]" data-axis-select="@axis.Key" class="wide">
+                            @foreach (var option in axis.Options)
+                            {
+                                <option value="@option.Index" selected="@(option.Index == axis.Selected ? "selected" : null)">@option.Name</option>
+                            }
+                        </select>
+
+                        @foreach (var option in axis.Options)
+                        {
+                            <div class="module-params@(option.Index == axis.Selected ? " active" : "")"
+                                 data-axis="@axis.Key"
+                                 data-index="@option.Index">
+                                @if (option.Parameters.Count == 0)
+                                {
+                                    <span class="muted small">Без параметров</span>
+                                }
+                                else
+                                {
+                                    @foreach (var parameter in option.Parameters)
+                                    {
+                                        string name = $"{axis.Key}_{option.Index}_{parameter.Key}";
+                                        <label class="inline">
+                                            <span>@parameter.Key</span>
+                                            <input type="text"
+                                                   name="ModuleParams[@name]"
+                                                   value="@Model.ModuleValue(name)"
+                                                   placeholder="по умолчанию"
+                                                   autocomplete="off" />
+                                        </label>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+
+                <fieldset>
+                    <legend>Запуск</legend>
+                    <label class="inline">
+                        <span>Поколений</span>
+                        <input type="number" asp-for="Generations" min="1" max="500000" step="1" />
+                    </label>
+                    <label class="inline">
+                        <span>Элитных особей</span>
+                        <input type="number" asp-for="EliteCount" min="0" max="10000" step="1" />
+                    </label>
+                    <label class="inline">
+                        <span>Seed</span>
+                        <input type="number" asp-for="Seed" step="1" />
+                    </label>
+                    <p class="muted small">
+                        Пустое поле параметра означает значение по умолчанию.
+                        Лимит — @IndexModel.MaxEvaluations.ToString("N0", CultureInfo.InvariantCulture) оценок
+                        (популяция × поколения), таймаут — 20 с.
+                    </p>
+                </fieldset>
+
+                <button type="submit" asp-page-handler="Run" class="primary">Запустить</button>
+            }
+        </form>
+    </section>
+
+    <section class="panel result">
+        @if (Model.Result is not null)
+        {
+            <h2>Результат</h2>
+            <dl class="summary">
+                <dt>Комбинация</dt>
+                <dd>@Model.Result.Variant</dd>
+                <dt>Лучшее значение</dt>
+                <dd>@Model.Result.BestLoss.ToString("0.######", CultureInfo.InvariantCulture)</dd>
+                <dt>Поколений</dt>
+                <dd>@Model.Result.GenerationsRun</dd>
+                <dt>Время</dt>
+                <dd>@Model.Result.ElapsedSeconds.ToString("0.00", CultureInfo.InvariantCulture) с</dd>
+            </dl>
+
+            @if (Model.Result.Stopped)
+            {
+                <div class="warning">Расчёт остановлен по таймауту. На графике — собранные до остановки поколения.</div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Result.BestGenome))
+            {
+                <details class="genome-box">
+                    <summary>Лучшая особь</summary>
+                    <code class="genome">@Model.Result.BestGenome</code>
+                </details>
+            }
+
+            <div class="chart-tools">
+                <label class="check">
+                    <input type="checkbox" id="log-scale" />
+                    <span>Логарифмическая шкала</span>
+                </label>
+                <span class="muted small">@Model.Result.Samples.Count точек</span>
+            </div>
+
+            <canvas id="chart" height="340"></canvas>
+
+            <script id="chart-data" type="application/json">@Html.Raw(Model.ChartDataJson)</script>
+        }
+        else
+        {
+            <div class="empty">
+                <h2>График появится здесь</h2>
+                <p class="muted">
+                    Настройте задачу и модули слева, затем нажмите «Запустить».
+                    Подписчик на <code>Core.IObserver</code> соберёт лучшие и средние значения по поколениям.
+                </p>
+            </div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/chart.js" asp-append-version="true"></script>
+}
