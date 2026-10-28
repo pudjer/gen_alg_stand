@@ -17,10 +17,11 @@
 
         <form method="post">
             <input type="hidden" name="ConfiguredProblemId" value="@Model.ConfiguredProblemId" />
+            <button type="submit" asp-page-handler="Configure" id="configure-submit" hidden tabindex="-1" aria-hidden="true"></button>
 
             <div class="field">
                 <label asp-for="ProblemId">Задача</label>
-                <select asp-for="ProblemId" class="wide">
+                <select asp-for="ProblemId" class="wide" data-problem-select>
                     @foreach (var group in Model.Problems.GroupBy(problem => problem.Family))
                     {
                         <optgroup label="@group.Key">
@@ -31,6 +32,7 @@
                         </optgroup>
                     }
                 </select>
+                <span class="muted small">Параметры и модули обновляются сразу при выборе задачи.</span>
             </div>
 
             @if (Model.Descriptor is not null && Model.Descriptor.Parameters.Count > 0)
@@ -50,8 +52,6 @@
                     }
                 </fieldset>
             }
-
-            <button type="submit" asp-page-handler="Configure" class="secondary">Применить параметры задачи</button>
 
             @if (Model.Configuration is not null)
             {

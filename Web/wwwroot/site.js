@@ -18,4 +18,23 @@
         });
         sync(select);
     });
+
+    const problemSelect = document.querySelector('select[data-problem-select]');
+    const configureButton = document.getElementById('configure-submit');
+
+    if (problemSelect && configureButton) {
+        let configureTimer = 0;
+
+        problemSelect.addEventListener('change', function () {
+            window.clearTimeout(configureTimer);
+            configureTimer = window.setTimeout(function () {
+                // Параметры другой задачи не должны переезжать в новую.
+                document.querySelectorAll('input[name^="ProblemParams["]').forEach(function (input) {
+                    input.value = '';
+                });
+
+                configureButton.click();
+            }, 150);
+        });
+    }
 })();

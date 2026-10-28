@@ -30,7 +30,9 @@ dotnet publish Web/Web.csproj -c Release -r linux-x64 --self-contained true -o /
 
 1. `ProblemCatalog` хранит все задачи из `Implementations.Problems`.
 2. `ProblemFactory<T>.Create` отдаёт декартово произведение осей: алгоритм и пять
-   модулей; страница показывает уникальные варианты по каждой оси.
+   модулей; страница показывает уникальные варианты по каждой оси. При смене
+   задачи форма сразу отправляется в `OnPostConfigure`, поэтому параметры и
+   списки модулей пересобираются без отдельной кнопки «Применить».
 3. `RunConfiguration<T>` (`Catalog/RunConfiguration.cs`) собирает `GeneticProblem<T>`,
    выбранный `IAlgorithm<T>` и `Runtime<T>`.
 4. Подписчик на `Core.IObserver` (`SubscribableObserver<T>`) на каждом поколении
