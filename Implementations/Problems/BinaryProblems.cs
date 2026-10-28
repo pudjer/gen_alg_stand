@@ -24,6 +24,7 @@ public abstract class BinaryProblemFactoryBase : IProblemFactory<BinaryChromosom
 
         return new ProblemFactory<BinaryChromosome>
         {
+            Algorithms = ModuleCatalog.Algorithms<BinaryChromosome>(),
             LossFunctions = [CreateLoss(length)],
             Selections = ModuleCatalog.Selections<BinaryChromosome>(),
             Crossovers = ModuleCatalog.BinaryCrossovers(),

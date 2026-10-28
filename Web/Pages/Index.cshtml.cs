@@ -104,6 +104,7 @@ public sealed class IndexModel : PageModel
             Axes[2].Selected,
             Axes[3].Selected,
             Axes[4].Selected,
+            Axes[5].Selected,
             ModuleParams,
             Generations,
             EliteCount,
@@ -177,6 +178,7 @@ public sealed class IndexModel : PageModel
 
         Axes =
         [
+            Axis("algorithm", "Алгоритм", Configuration.Algorithms),
             Axis("loss", "Функция потерь", Configuration.LossFunctions),
             Axis("selection", "Селекция", Configuration.Selections),
             Axis("crossover", "Скрещивание", Configuration.Crossovers),

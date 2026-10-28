@@ -6,6 +6,8 @@ namespace Setup;
 public sealed class ProblemFactory<TChromosome> : IProblemFactory<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
+    public required IReadOnlyList<IModuleFactory<IAlgorithm<TChromosome>>> Algorithms { get; init; }
+
     public required IReadOnlyList<IModuleFactory<ILossFunction<TChromosome>>> LossFunctions { get; init; }
 
     public required IReadOnlyList<IModuleFactory<ISelection<TChromosome>>> Selections { get; init; }
@@ -24,9 +26,10 @@ public sealed class ProblemFactory<TChromosome> : IProblemFactory<TChromosome>
         ArgumentNullException.ThrowIfNull(values);
 
         var variants = new List<Variant<TChromosome>>(
-            LossFunctions.Count * Selections.Count * Crossovers.Count *
+            Algorithms.Count * LossFunctions.Count * Selections.Count * Crossovers.Count *
             Mutations.Count * InitialPopulations.Count);
 
+        foreach (var algorithm in Algorithms)
         foreach (var loss in LossFunctions)
         foreach (var selection in Selections)
         foreach (var crossover in Crossovers)
@@ -35,6 +38,7 @@ public sealed class ProblemFactory<TChromosome> : IProblemFactory<TChromosome>
         {
             variants.Add(new Variant<TChromosome>
             {
+                Algorithm = algorithm,
                 LossFunction = loss,
                 Selection = selection,
                 Crossover = crossover,

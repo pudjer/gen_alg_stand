@@ -41,6 +41,7 @@ public abstract class FloatProblemFactoryBase : IProblemFactory<FloatChromosome>
 
         return new ProblemFactory<FloatChromosome>
         {
+            Algorithms = ModuleCatalog.Algorithms<FloatChromosome>(),
             LossFunctions = [CreateLoss(length, minValue, maxValue)],
             Selections = ModuleCatalog.Selections<FloatChromosome>(),
             Crossovers = ModuleCatalog.FloatCrossovers(),

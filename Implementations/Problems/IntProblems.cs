@@ -32,6 +32,7 @@ public sealed class SumTargetProblemFactory : IProblemFactory<IntChromosome>
 
         return new ProblemFactory<IntChromosome>
         {
+            Algorithms = ModuleCatalog.Algorithms<IntChromosome>(),
             LossFunctions = [new SumTargetLossFactory<IntChromosome>(target)],
             Selections = ModuleCatalog.Selections<IntChromosome>(),
             Crossovers = ModuleCatalog.IntCrossovers(),

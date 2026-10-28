@@ -26,6 +26,7 @@ public abstract class PermutationProblemFactoryBase : IProblemFactory<Permutatio
 
         return new ProblemFactory<PermutationChromosome>
         {
+            Algorithms = ModuleCatalog.Algorithms<PermutationChromosome>(),
             LossFunctions = CreateLosses(length),
             Selections = ModuleCatalog.Selections<PermutationChromosome>(),
             Crossovers = ModuleCatalog.PermutationCrossovers(),

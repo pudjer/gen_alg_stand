@@ -6,6 +6,8 @@ namespace Setup;
 public sealed class Variant<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
+    public required IModuleFactory<IAlgorithm<TChromosome>> Algorithm { get; init; }
+
     public required IModuleFactory<ILossFunction<TChromosome>> LossFunction { get; init; }
 
     public required IModuleFactory<ISelection<TChromosome>> Selection { get; init; }
@@ -32,7 +34,10 @@ public sealed class Variant<TChromosome>
             InitialPopulation = InitialPopulation.Create(initialPopulation),
         };
 
+    public IAlgorithm<TChromosome> CreateAlgorithm(ParameterSet algorithm) =>
+        Algorithm.Create(algorithm);
+
     public override string ToString() =>
-        $"{LossFunction.Name} / {Selection.Name} / {Crossover.Name} / {Mutation.Name} / " +
-        $"{InitialPopulation.Name}";
+        $"{Algorithm.Name} / {LossFunction.Name} / {Selection.Name} / {Crossover.Name} / " +
+        $"{Mutation.Name} / {InitialPopulation.Name}";
 }

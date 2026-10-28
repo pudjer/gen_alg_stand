@@ -5,6 +5,7 @@ namespace GenAlgStand.Web.Catalog;
 public sealed record ModuleOption(int Index, string Name, IReadOnlyList<IParameter> Parameters);
 
 public sealed record RunRequest(
+    int Algorithm,
     int Loss,
     int Selection,
     int Crossover,
@@ -32,6 +33,8 @@ public sealed record RunResult(
 
 public interface IRunConfiguration
 {
+    IReadOnlyList<ModuleOption> Algorithms { get; }
+
     IReadOnlyList<ModuleOption> LossFunctions { get; }
 
     IReadOnlyList<ModuleOption> Selections { get; }

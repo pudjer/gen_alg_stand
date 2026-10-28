@@ -7,6 +7,13 @@ namespace Implementations.Common;
 
 internal static class ModuleCatalog
 {
+    internal static IReadOnlyList<IModuleFactory<IAlgorithm<TChromosome>>> Algorithms<TChromosome>()
+        where TChromosome : IChromosome<TChromosome> =>
+    [
+        new GenerationalAlgorithmFactory<TChromosome>(),
+        new IslandModelAlgorithmFactory<TChromosome>(),
+    ];
+
     internal static IReadOnlyList<IModuleFactory<ISelection<TChromosome>>> Selections<TChromosome>()
         where TChromosome : IChromosome<TChromosome> =>
     [

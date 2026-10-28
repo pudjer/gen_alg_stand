@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Algorithms.Orchestration;
+using System.Globalization;
 using Core.Contracts;
 using Parameters;
 using Setup;
@@ -22,12 +22,15 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
         _describe = describe;
         _visualizer = visualizer;
 
+        Algorithms = Options(variants.Select(variant => variant.Algorithm));
         LossFunctions = Options(variants.Select(variant => variant.LossFunction));
         Selections = Options(variants.Select(variant => variant.Selection));
         Crossovers = Options(variants.Select(variant => variant.Crossover));
         Mutations = Options(variants.Select(variant => variant.Mutation));
         InitialPopulations = Options(variants.Select(variant => variant.InitialPopulation));
     }
+
+    public IReadOnlyList<ModuleOption> Algorithms { get; }
 
     public IReadOnlyList<ModuleOption> LossFunctions { get; }
 
@@ -43,6 +46,7 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
     {
         ArgumentNullException.ThrowIfNull(request);
 
+        ModuleOption algorithm = Pick(Algorithms, request.Algorithm, "алгоритм");
         ModuleOption loss = Pick(LossFunctions, request.Loss, "функция потерь");
         ModuleOption selection = Pick(Selections, request.Selection, "селекция");
         ModuleOption crossover = Pick(Crossovers, request.Crossover, "скрещивание");
@@ -50,6 +54,7 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
         ModuleOption initial = Pick(InitialPopulations, request.InitialPopulation, "начальная популяция");
 
         Variant<TChromosome>? variant = _variants.FirstOrDefault(candidate =>
+            candidate.Algorithm.Name == algorithm.Name &&
             candidate.LossFunction.Name == loss.Name &&
             candidate.Selection.Name == selection.Name &&
             candidate.Crossover.Name == crossover.Name &&
@@ -63,6 +68,11 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
             BuildSet("crossover", crossover, request),
             BuildSet("mutation", mutation, request),
             BuildSet("init", initial, request));
+
+        ParameterSet algorithmSet = BuildSet("algorithm", algorithm, request);
+        algorithmSet["generations"] = request.Generations.ToString(CultureInfo.InvariantCulture);
+        algorithmSet["eliteCount"] = request.EliteCount.ToString(CultureInfo.InvariantCulture);
+        IAlgorithm<TChromosome> runner = variant.CreateAlgorithm(algorithmSet);
 
         var observer = new SubscribableObserver<TChromosome>();
         var runtime = new Runtime<TChromosome>
@@ -95,7 +105,8 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
                 if (population.Count > 100_000)
                 {
                     throw new RunRejectedException(
-                        $"Популяция из {population.Count:N0} особей слишком велика для стенда (лимит 100 000).");
+                        $"Суммарная популяция из {population.Count:N0} особей слишком велика для стенда " +
+                        "(лимит 100 000).");
                 }
 
                 long evaluations = (long)population.Count * (request.Generations + 1);
@@ -154,10 +165,7 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
 
         try
         {
-            var algorithm = new GenerationalAlgorithm<TChromosome>(
-                new GenerationalOptions(request.Generations, request.EliteCount, MaintainPopulationSize: true));
-
-            algorithm.Run(problem, runtime);
+            runner.Run(problem, runtime);
         }
         catch (RunBudgetExceededException)
         {
@@ -199,7 +207,8 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
             lastGeneration,
             stopwatch.Elapsed.TotalSeconds,
             stopped,
-            $"{loss.Name} / {selection.Name} / {crossover.Name} / {mutation.Name} / {initial.Name}",
+            $"{algorithm.Name} / {loss.Name} / {selection.Name} / {crossover.Name} / " +
+            $"{mutation.Name} / {initial.Name}",
             visualization);
     }
 
