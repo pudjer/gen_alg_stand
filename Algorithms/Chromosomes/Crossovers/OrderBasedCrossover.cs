@@ -3,23 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Order-based crossover (OX2) for ordered chromosomes.</summary>
-/// <typeparam name="TSelf">The concrete ordered chromosome type.</typeparam>
 public sealed class OrderBasedCrossover<TSelf> : CrossoverBase<TSelf>
     where TSelf : IOrderedChromosome<TSelf>
 {
-    /// <summary>Creates an order-based crossover.</summary>
-    /// <param name="crossoverProbability">Probability that a pair is recombined; must be in [0, 1].</param>
     public OrderBasedCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    /// <summary>Produces one OX2 offspring pair from two ordered parents with the same length.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent; must have the same length as <paramref name="first"/>.</param>
-    /// <param name="random">Random source used to pick the copied positions.</param>
-    /// <returns>The two children created by order-based crossover.</returns>
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)
@@ -45,7 +36,6 @@ public sealed class OrderBasedCrossover<TSelf> : CrossoverBase<TSelf>
         return (first.WithGenes(child1), second.WithGenes(child2));
     }
 
-    /// <summary>Builds one OX2 child by preserving selected primary genes and filling the rest in donor order.</summary>
     private static int[] BuildChild(int[] primary, int[] donor, bool[] selectedPositions)
     {
         int length = primary.Length;
@@ -85,7 +75,6 @@ public sealed class OrderBasedCrossover<TSelf> : CrossoverBase<TSelf>
         return child;
     }
 
-    /// <summary>Selects a random non-empty subset of positions.</summary>
     private static bool[] SelectPositions(int length, IRandom random)
     {
         int[] positions = new int[length];
@@ -110,7 +99,6 @@ public sealed class OrderBasedCrossover<TSelf> : CrossoverBase<TSelf>
         return selected;
     }
 
-    /// <summary>Copies the chromosome genes into a fresh array without mutating the source.</summary>
     private static int[] CopyGenes(TSelf chromosome, int length)
     {
         int[] genes = new int[length];

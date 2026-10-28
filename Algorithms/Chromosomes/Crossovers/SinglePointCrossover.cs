@@ -3,20 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Single-point crossover: genes are exchanged after one randomly chosen cut.</summary>
-/// <typeparam name="TSelf">Concrete genotype chromosome type.</typeparam>
-/// <typeparam name="TGene">Gene type.</typeparam>
 public sealed class SinglePointCrossover<TSelf, TGene> : CrossoverBase<TSelf>
     where TSelf : IGenotypeChromosome<TSelf, TGene>
 {
-    /// <summary>Initializes a new instance of the <see cref="SinglePointCrossover{TSelf, TGene}"/> class.</summary>
-    /// <param name="crossoverProbability">Probability in [0, 1] that a pair is recombined.</param>
     public SinglePointCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    /// <inheritdoc />
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)

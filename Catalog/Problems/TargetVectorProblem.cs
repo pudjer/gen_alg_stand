@@ -6,13 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>
-/// Target vector: minimize the mean squared error to a fixed target vector.
-/// </summary>
-/// <remarks>
-/// The target vector is generated deterministically from <c>targetSeed</c> by drawing each component
-/// uniformly from the problem's gene range, so the same seed always yields the same target.
-/// </remarks>
 public sealed class TargetVectorProblem : ProblemEntry<FloatChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -23,16 +16,12 @@ public sealed class TargetVectorProblem : ProblemEntry<FloatChromosome>
         new("targetSeed", "Target vector seed", ParameterKind.Int, "13", Min: int.MinValue, Max: int.MaxValue, Step: 1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.targetvector";
 
-    /// <inheritdoc />
     public override string DisplayName => "Target vector";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<FloatChromosome> BuildOperators(ParameterSet problemParameters)
     {
         FloatChromosome template = ProblemTemplates.FloatTemplate(problemParameters);

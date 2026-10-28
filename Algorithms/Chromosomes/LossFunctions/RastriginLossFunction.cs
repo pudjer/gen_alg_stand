@@ -3,22 +3,13 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-/// <summary>
-/// Minimization loss implementing the Rastrigin function over all genes.
-/// </summary>
 public sealed class RastriginLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Rastrigin loss function.
-    /// </summary>
     public RastriginLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Rastrigin value computed from the chromosome length and its genes.
-    /// </summary>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);

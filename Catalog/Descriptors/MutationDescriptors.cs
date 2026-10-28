@@ -4,26 +4,14 @@ using Parameters;
 
 namespace Catalog.Descriptors;
 
-/// <summary>Descriptors for mutation operators.</summary>
-/// <remarks>
-/// Mutations are generic over the chromosome type, so every method here is closed over
-/// <c>TSelf</c> by the caller and returns ready-to-use descriptors.
-/// </remarks>
 public static class MutationDescriptors
 {
-    /// <summary>Gets the probability that a single gene is mutated.</summary>
     private static ParameterSpec GeneProbability { get; } =
         new("geneProbability", "Gene mutation probability", ParameterKind.Double, "0.01", Min: 0, Max: 1, Step: 0.01);
 
-    /// <summary>Gets the probability that a chromosome is mutated.</summary>
     private static ParameterSpec ChromosomeProbability { get; } =
         new("chromosomeProbability", "Chromosome mutation probability", ParameterKind.Double, "0.1", Min: 0, Max: 1, Step: 0.05);
 
-    /// <summary>Gets the mutations specific to binary chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete binary chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for bit-flip mutation.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForBinary<TSelf>(string keyPrefix = "mutation")
         where TSelf : IBinaryChromosome<TSelf>
     {
@@ -36,11 +24,6 @@ public static class MutationDescriptors
         ];
     }
 
-    /// <summary>Gets the mutations specific to floating-point chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete floating-point chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for Gaussian and uniform float mutation.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForFloat<TSelf>(string keyPrefix = "mutation")
         where TSelf : IFloatChromosome<TSelf>
     {
@@ -63,11 +46,6 @@ public static class MutationDescriptors
         ];
     }
 
-    /// <summary>Gets the mutations specific to integer chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete integer chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for uniform integer mutation.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForInt<TSelf>(string keyPrefix = "mutation")
         where TSelf : IIntChromosome<TSelf>
     {
@@ -82,11 +60,6 @@ public static class MutationDescriptors
         ];
     }
 
-    /// <summary>Gets the mutations specific to ordered chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete ordered chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for swap, insert, inversion and scramble mutation.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForOrdered<TSelf>(string keyPrefix = "mutation")
         where TSelf : IOrderedChromosome<TSelf>
     {

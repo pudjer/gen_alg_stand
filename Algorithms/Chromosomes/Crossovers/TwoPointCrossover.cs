@@ -3,20 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Two-point crossover: genes between two cuts are exchanged, outer genes are kept.</summary>
-/// <typeparam name="TSelf">Concrete genotype chromosome type.</typeparam>
-/// <typeparam name="TGene">Gene type.</typeparam>
 public sealed class TwoPointCrossover<TSelf, TGene> : CrossoverBase<TSelf>
     where TSelf : IGenotypeChromosome<TSelf, TGene>
 {
-    /// <summary>Initializes a new instance of the <see cref="TwoPointCrossover{TSelf, TGene}"/> class.</summary>
-    /// <param name="crossoverProbability">Probability in [0, 1] that a pair is recombined.</param>
     public TwoPointCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    /// <inheritdoc />
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)

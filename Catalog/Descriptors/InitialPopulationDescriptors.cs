@@ -4,18 +4,11 @@ using Parameters;
 
 namespace Catalog.Descriptors;
 
-/// <summary>Descriptors for initial population generators.</summary>
 public static class InitialPopulationDescriptors
 {
     private static ParameterSpec PopulationSize { get; } =
         new("populationSize", "Population size", ParameterKind.Int, "50", Min: 2, Max: 10000, Step: 1);
 
-    /// <summary>Gets the binary population generator for <typeparamref name="TSelf"/>.</summary>
-    /// <typeparam name="TSelf">Concrete binary chromosome type.</typeparam>
-    /// <param name="template">Chromosome supplying the gene count; never mutated.</param>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for <see cref="RandomBinaryPopulation{TSelf}"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="template"/> is <see langword="null"/>.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForBinary<TSelf>(TSelf template, string keyPrefix = "population")
         where TSelf : IBinaryChromosome<TSelf>
     {
@@ -30,12 +23,6 @@ public static class InitialPopulationDescriptors
         ];
     }
 
-    /// <summary>Gets the floating-point population generator for <typeparamref name="TSelf"/>.</summary>
-    /// <typeparam name="TSelf">Concrete floating-point chromosome type.</typeparam>
-    /// <param name="template">Chromosome supplying the gene count and bounds; never mutated.</param>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for <see cref="RandomFloatPopulation{TSelf}"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="template"/> is <see langword="null"/>.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForFloat<TSelf>(TSelf template, string keyPrefix = "population")
         where TSelf : IFloatChromosome<TSelf>
     {
@@ -48,12 +35,6 @@ public static class InitialPopulationDescriptors
         ];
     }
 
-    /// <summary>Gets the integer population generator for <typeparamref name="TSelf"/>.</summary>
-    /// <typeparam name="TSelf">Concrete integer chromosome type.</typeparam>
-    /// <param name="template">Chromosome supplying the gene count and bounds; never mutated.</param>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for <see cref="RandomIntPopulation{TSelf}"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="template"/> is <see langword="null"/>.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForInt<TSelf>(TSelf template, string keyPrefix = "population")
         where TSelf : IIntChromosome<TSelf>
     {
@@ -66,12 +47,6 @@ public static class InitialPopulationDescriptors
         ];
     }
 
-    /// <summary>Gets the permutation population generator for <typeparamref name="TSelf"/>.</summary>
-    /// <typeparam name="TSelf">Concrete permutation chromosome type.</typeparam>
-    /// <param name="template">Chromosome supplying the gene count; never mutated.</param>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for <see cref="RandomPermutationPopulation{TSelf}"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="template"/> is <see langword="null"/>.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForPermutation<TSelf>(TSelf template, string keyPrefix = "population")
         where TSelf : IPermutationChromosome<TSelf>
     {

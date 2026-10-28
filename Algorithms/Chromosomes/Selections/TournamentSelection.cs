@@ -2,21 +2,12 @@ using Core.Contracts;
 
 namespace Algorithms.Selections;
 
-/// <summary>
-/// Selects individuals by running random tournaments and keeping the fittest contestant of each.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type being evolved.</typeparam>
 public sealed class TournamentSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
     private readonly ILossFunction<TChromosome> _lossFunction;
     private readonly int _tournamentSize;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TournamentSelection{TChromosome}"/> class.
-    /// </summary>
-    /// <param name="lossFunction">Fitness evaluator; lower values are better.</param>
-    /// <param name="tournamentSize">Number of contestants per tournament; must be at least one.</param>
     public TournamentSelection(ILossFunction<TChromosome> lossFunction, int tournamentSize = 3)
     {
         ArgumentNullException.ThrowIfNull(lossFunction);
@@ -26,7 +17,6 @@ public sealed class TournamentSelection<TChromosome> : ISelection<TChromosome>
         _tournamentSize = tournamentSize;
     }
 
-    /// <inheritdoc />
     public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);

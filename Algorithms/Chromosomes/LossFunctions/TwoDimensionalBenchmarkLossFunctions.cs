@@ -3,25 +3,13 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-/// <summary>
-/// Minimization loss implementing the Booth function over the first two genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class BoothLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Booth loss function.
-    /// </summary>
     public BoothLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Booth value computed from the first two genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Booth value, or zero when the chromosome has fewer than two genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -40,25 +28,13 @@ public sealed class BoothLossFunction<TChromosome> : ILossFunction<TChromosome>
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Beale function over the first two genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class BealeLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Beale loss function.
-    /// </summary>
     public BealeLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Beale value computed from the first two genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Beale value, or zero when the chromosome has fewer than two genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -78,25 +54,13 @@ public sealed class BealeLossFunction<TChromosome> : ILossFunction<TChromosome>
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Himmelblau function over the first two genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class HimmelblauLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Himmelblau loss function.
-    /// </summary>
     public HimmelblauLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Himmelblau value computed from the first two genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Himmelblau value, or zero when the chromosome has fewer than two genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -115,25 +79,13 @@ public sealed class HimmelblauLossFunction<TChromosome> : ILossFunction<TChromos
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Easom function over the first two genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class EasomLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Easom loss function.
-    /// </summary>
     public EasomLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Easom value computed from the first two genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Easom value, or zero when the chromosome has fewer than two genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -153,25 +105,13 @@ public sealed class EasomLossFunction<TChromosome> : ILossFunction<TChromosome>
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Bukin function over the first two genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class BukinLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Bukin loss function.
-    /// </summary>
     public BukinLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Bukin value computed from the first two genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Bukin value, or zero when the chromosome has fewer than two genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -190,25 +130,13 @@ public sealed class BukinLossFunction<TChromosome> : ILossFunction<TChromosome>
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Matyas function over the first two genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class MatyasLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Matyas loss function.
-    /// </summary>
     public MatyasLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Matyas value computed from the first two genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Matyas value, or zero when the chromosome has fewer than two genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);

@@ -3,17 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Arithmetic (convex-combination) crossover for floating-point genotypes.</summary>
-/// <typeparam name="TSelf">Concrete floating-point chromosome type.</typeparam>
 public sealed class ArithmeticCrossover<TSelf> : CrossoverBase<TSelf>
     where TSelf : IFloatChromosome<TSelf>
 {
     private readonly double weight;
 
-    /// <summary>Initializes a new instance of the <see cref="ArithmeticCrossover{TSelf}"/> class.</summary>
-    /// <param name="weight">Blend weight applied to the first parent; must be finite and in [0, 1].</param>
-    /// <param name="crossoverProbability">Probability that a pair is actually recombined; must be in [0, 1].</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="weight"/> is not finite or lies outside [0, 1].</exception>
     public ArithmeticCrossover(double weight = 0.5, double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
@@ -30,12 +24,6 @@ public sealed class ArithmeticCrossover<TSelf> : CrossoverBase<TSelf>
         this.weight = weight;
     }
 
-    /// <summary>Produces two arithmetic-combination offspring from the supplied parents.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent; must have the same length as <paramref name="first"/>.</param>
-    /// <param name="random">Random source (unused; the blend is deterministic).</param>
-    /// <returns>The two offspring chromosomes.</returns>
-    /// <exception cref="ArgumentException">The parents have different lengths.</exception>
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)

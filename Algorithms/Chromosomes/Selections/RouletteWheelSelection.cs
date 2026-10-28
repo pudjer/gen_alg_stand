@@ -2,33 +2,17 @@ using Core.Contracts;
 
 namespace Algorithms.Selections;
 
-/// <summary>
-/// Selects individuals by fitness-proportionate sampling, turning losses into weights by linear
-/// inversion within the current population.
-/// </summary>
-/// <remarks>
-/// The loss function is trusted only for its contract: lower is better. No assumption is made about
-/// the sign or scale of the values, so this works for losses that are negative (for example the
-/// negated OneMax count), unbounded, or arbitrary. Weights are derived relative to the population's
-/// own worst and best loss, which keeps the selection pressure independent of the loss scale.
-/// </remarks>
-/// <typeparam name="TChromosome">The chromosome type being evolved.</typeparam>
 public sealed class RouletteWheelSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
     private readonly ILossFunction<TChromosome> _lossFunction;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RouletteWheelSelection{TChromosome}"/> class.
-    /// </summary>
-    /// <param name="lossFunction">Fitness evaluator; lower values are better.</param>
     public RouletteWheelSelection(ILossFunction<TChromosome> lossFunction)
     {
         ArgumentNullException.ThrowIfNull(lossFunction);
         _lossFunction = lossFunction;
     }
 
-    /// <inheritdoc />
     public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
@@ -87,14 +71,6 @@ public sealed class RouletteWheelSelection<TChromosome> : ISelection<TChromosome
         return result;
     }
 
-    /// <summary>
-    /// Converts losses into positive weights by linear inversion relative to the population's span.
-    /// </summary>
-    /// <remarks>
-    /// An offset of <c>span / count</c> keeps the worst individual selectable, so no chromosome is
-    /// excluded outright. When the span is zero (all losses equal, or non-finite values present) the
-    /// weights are uniform, which degrades gracefully to random selection.
-    /// </remarks>
     private static double[] ComputeWeights(double[] losses)
     {
         int count = losses.Length;

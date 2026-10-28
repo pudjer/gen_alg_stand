@@ -3,27 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Classic cycle crossover (CX) for ordered chromosomes.</summary>
-/// <typeparam name="TSelf">The concrete ordered chromosome type.</typeparam>
-/// <remarks>
-/// Both parents must contain the same set of genes (typically a permutation of the same values);
-/// otherwise an <see cref="ArgumentException"/> is thrown.
-/// </remarks>
 public sealed class CycleCrossover<TSelf> : CrossoverBase<TSelf>
     where TSelf : IOrderedChromosome<TSelf>
 {
-    /// <summary>Creates a cycle crossover.</summary>
-    /// <param name="crossoverProbability">Probability that a pair is recombined; must be in [0, 1].</param>
     public CycleCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    /// <summary>Produces one CX offspring pair from two ordered parents sharing the same gene set.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent; must have the same length and gene set as <paramref name="first"/>.</param>
-    /// <param name="random">Random source, unused because cycle crossover is deterministic.</param>
-    /// <returns>The two children created by cycle crossover.</returns>
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)
@@ -118,7 +105,6 @@ public sealed class CycleCrossover<TSelf> : CrossoverBase<TSelf>
             cycleIndex++;
         }
 
-        // Positions not reached by any cycle (only possible with malformed input).
         for (int i = 0; i < length; i++)
         {
             if (assigned[i])
@@ -133,7 +119,6 @@ public sealed class CycleCrossover<TSelf> : CrossoverBase<TSelf>
         return (first.WithGenes(child1), second.WithGenes(child2));
     }
 
-    /// <summary>Maps each gene in <paramref name="parent"/> to its position.</summary>
     private static Dictionary<int, int> BuildPositionLookup(int[] parent)
     {
         Dictionary<int, int> lookup = new Dictionary<int, int>(parent.Length);
@@ -145,14 +130,12 @@ public sealed class CycleCrossover<TSelf> : CrossoverBase<TSelf>
         return lookup;
     }
 
-    /// <summary>Checks whether both arrays contain exactly the same distinct values.</summary>
     private static bool SameGeneSet(int[] first, int[] second)
     {
         HashSet<int> set = new HashSet<int>(first);
         return set.SetEquals(second);
     }
 
-    /// <summary>Copies the chromosome genes into a fresh array without mutating the source.</summary>
     private static int[] CopyGenes(TSelf chromosome, int length)
     {
         int[] genes = new int[length];

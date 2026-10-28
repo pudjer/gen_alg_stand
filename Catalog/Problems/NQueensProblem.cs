@@ -6,7 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>N-Queens: place N queens on an N×N board without any pair attacking.</summary>
 public sealed class NQueensProblem : ProblemEntry<PermutationChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -14,16 +13,12 @@ public sealed class NQueensProblem : ProblemEntry<PermutationChromosome>
         new("size", "Board size", ParameterKind.Int, "8", Min: 1, Max: 200, Step: 1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.nqueens";
 
-    /// <inheritdoc />
     public override string DisplayName => "N-Queens";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<PermutationChromosome> BuildOperators(ParameterSet problemParameters)
     {
         PermutationChromosome template = PermutationChromosome.Identity(problemParameters.GetInt("size"));

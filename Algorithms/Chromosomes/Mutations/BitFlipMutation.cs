@@ -3,16 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.Mutations;
 
-/// <summary>Flips each binary gene independently with a configurable probability.</summary>
-/// <typeparam name="TSelf">Concrete binary chromosome type.</typeparam>
 public sealed class BitFlipMutation<TSelf> : MutationBase<TSelf>
     where TSelf : IBinaryChromosome<TSelf>
 {
     private readonly double _geneProbability;
 
-    /// <summary>Initializes a new instance of the <see cref="BitFlipMutation{TSelf}"/> class.</summary>
-    /// <param name="geneProbability">Probability in [0, 1] that a single gene is flipped.</param>
-    /// <param name="chromosomeProbability">Probability in [0, 1] that a chromosome is mutated.</param>
     public BitFlipMutation(double geneProbability = 0.01, double chromosomeProbability = 0.1)
         : base(chromosomeProbability)
     {
@@ -27,7 +22,6 @@ public sealed class BitFlipMutation<TSelf> : MutationBase<TSelf>
         _geneProbability = geneProbability;
     }
 
-    /// <inheritdoc />
     protected override TSelf MutateChromosome(TSelf chromosome, IRandom random)
     {
         var genes = new bool[chromosome.Length];

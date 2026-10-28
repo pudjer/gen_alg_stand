@@ -6,15 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>
-/// Travelling salesman: minimize the closed-tour length over a permutation.
-/// </summary>
-/// <remarks>
-/// A distance matrix is not a scalar parameter, so the problem generates one deterministically from
-/// <c>matrixSeed</c>: city positions are drawn uniformly from the unit square with a
-/// <see cref="Algorithms.Random.SeededRandom"/>, and distances are the Euclidean distances between
-/// them. The same seed always yields the same matrix, which keeps runs reproducible.
-/// </remarks>
 public sealed class TspProblem : ProblemEntry<PermutationChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -23,16 +14,12 @@ public sealed class TspProblem : ProblemEntry<PermutationChromosome>
         new("matrixSeed", "Distance matrix seed", ParameterKind.Int, "7", Min: int.MinValue, Max: int.MaxValue, Step: 1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.tsp";
 
-    /// <inheritdoc />
     public override string DisplayName => "Travelling salesman";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<PermutationChromosome> BuildOperators(ParameterSet problemParameters)
     {
         int size = problemParameters.GetInt("size");
@@ -52,10 +39,6 @@ public sealed class TspProblem : ProblemEntry<PermutationChromosome>
         };
     }
 
-    /// <summary>
-    /// Builds a symmetric Euclidean distance matrix from <paramref name="size"/> points drawn
-    /// deterministically from <paramref name="seed"/>.
-    /// </summary>
     private static double[,] CreateDistanceMatrix(int size, int seed)
     {
         Algorithms.Random.SeededRandom random = new(seed);

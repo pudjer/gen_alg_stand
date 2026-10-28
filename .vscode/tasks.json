@@ -1,0 +1,90 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build Parameters",
+			"type": "shell",
+			"command": "dotnet build Parameters/Parameters.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build Parameters",
+			"type": "shell",
+			"command": "dotnet build Parameters/Parameters.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build Parameters",
+			"type": "shell",
+			"command": "dotnet build Parameters/Parameters.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "delete old parameter types",
+			"type": "shell",
+			"command": "rm -f Parameters/DelegateParameter.cs Parameters/ParameterChoice.cs Parameters/ParameterInt.cs Parameters/ParameterIntInterval.cs Parameters/ParameterDouble.cs Parameters/ParameterDoubleInterval.cs Parameters/ParameterBool.cs Parameters/ParameterText.cs"
+		},
+		{
+			"label": "build Parameters",
+			"type": "shell",
+			"command": "dotnet build Parameters/Parameters.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build Parameters",
+			"type": "shell",
+			"command": "dotnet build Parameters/Parameters.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "clear Parameters",
+			"type": "shell",
+			"command": "rm -f Parameters/Parameter.cs Parameters/Validator.cs Parameters/ParameterSet.cs Parameters/IValidator.cs"
+		},
+		{
+			"label": "build Parameters",
+			"type": "shell",
+			"command": "dotnet build Parameters/Parameters.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "strip xml docs",
+			"type": "shell",
+			"command": "for f in $(git ls-files '*.cs' 2>/dev/null || find . -name '*.cs' -not -path '*/obj/*' -not -path '*/bin/*'); do perl -0pi -e 's{^[ \\t]*///.*\\n}{}gm' \"$f\"; done; grep -rn '///' --include='*.cs' . | grep -v '/obj/' | grep -v '/bin/' | head -20"
+		},
+		{
+			"label": "strip all comments",
+			"type": "shell",
+			"command": "find . -name '*.cs' -not -path '*/obj/*' -not -path '*/bin/*' -print0 | xargs -0 perl -0pi -e 's{^[ \\t]*///.*\\n}{}gm; s{^[ \\t]*//(?![/!]).*\\n}{}gm; s{^[ \\t]*/\\*.*?\\*/[ \\t]*\\n}{}gms'; grep -rn --include='*.cs' -E '//|/\\*' . | grep -v '/obj/' | grep -v '/bin/' | head -20"
+		},
+		{
+			"label": "build solution",
+			"type": "shell",
+			"command": "dotnet build Gen_alg_stand.slnx -warnaserror 2>&1 | grep -E 'error|warning|Build succeeded|Build FAILED' | sed 's/\\[.*//' | sort -u | head -30",
+			"group": "build"
+		},
+		{
+			"label": "other errors",
+			"type": "shell",
+			"command": "dotnet build Gen_alg_stand.slnx 2>&1 | grep -E 'error' | grep -v ParameterSpec | grep -v ParameterKind | sed 's/\\[.*//' | sort -u | head -20"
+		}
+	]
+}

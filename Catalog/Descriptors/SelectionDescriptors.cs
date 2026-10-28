@@ -4,20 +4,8 @@ using Parameters;
 
 namespace Catalog.Descriptors;
 
-/// <summary>Descriptors for selection operators.</summary>
-/// <remarks>
-/// Every selection needs the problem's loss function, so the descriptors are closed over both the
-/// chromosome type and that loss function.
-/// </remarks>
 public static class SelectionDescriptors
 {
-    /// <summary>Gets the selection operators valid for <typeparamref name="TSelf"/>.</summary>
-    /// <typeparam name="TSelf">Concrete chromosome type.</typeparam>
-    /// <param name="lossFunction">Loss function used to rank individuals; lower is better.</param>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for random, rank, roulette-wheel, tournament, truncation and SUS selection.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="lossFunction"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> For<TSelf>(ILossFunction<TSelf> lossFunction, string keyPrefix = "selection")
         where TSelf : IChromosome<TSelf>
     {

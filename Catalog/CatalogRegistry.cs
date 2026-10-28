@@ -4,9 +4,6 @@ using Studio;
 
 namespace Catalog;
 
-/// <summary>
-/// The built-in catalog: every problem the bench knows about.
-/// </summary>
 public sealed class CatalogRegistry : ICatalog
 {
     private static readonly IReadOnlyList<IProblemEntry> AllProblems =
@@ -33,10 +30,8 @@ public sealed class CatalogRegistry : ICatalog
         new TargetVectorProblem(),
     ];
 
-    /// <inheritdoc />
     public IReadOnlyList<IProblemEntry> Problems => AllProblems;
 
-    /// <inheritdoc />
     public IProblemEntry? FindProblem(string key)
     {
         ArgumentNullException.ThrowIfNull(key);
@@ -52,7 +47,6 @@ public sealed class CatalogRegistry : ICatalog
         return null;
     }
 
-    /// <inheritdoc />
     public ExperimentConfig CreateDefaultConfig(string problemKey)
     {
         IProblemEntry problem = FindProblem(problemKey)

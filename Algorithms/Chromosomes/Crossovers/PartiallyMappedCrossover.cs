@@ -3,23 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Classic partially mapped crossover (PMX) for ordered chromosomes.</summary>
-/// <typeparam name="TSelf">The concrete ordered chromosome type.</typeparam>
 public sealed class PartiallyMappedCrossover<TSelf> : CrossoverBase<TSelf>
     where TSelf : IOrderedChromosome<TSelf>
 {
-    /// <summary>Creates a partially mapped crossover.</summary>
-    /// <param name="crossoverProbability">Probability that a pair is recombined; must be in [0, 1].</param>
     public PartiallyMappedCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    /// <summary>Produces one PMX offspring pair from two ordered parents with the same length.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent; must have the same length as <paramref name="first"/>.</param>
-    /// <param name="random">Random source used to pick the copied segment.</param>
-    /// <returns>The two children created by partially mapped crossover.</returns>
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)
@@ -47,7 +38,6 @@ public sealed class PartiallyMappedCrossover<TSelf> : CrossoverBase<TSelf>
         return (first.WithGenes(child1), second.WithGenes(child2));
     }
 
-    /// <summary>Builds one PMX child, copying the segment of <paramref name="segmentParent"/> and mapping the rest.</summary>
     private static int[] BuildChild(int[] segmentParent, int[] otherParent, int start, int end)
     {
         int length = segmentParent.Length;
@@ -84,7 +74,6 @@ public sealed class PartiallyMappedCrossover<TSelf> : CrossoverBase<TSelf>
 
             if (used.Contains(value))
             {
-                // Defensive fallback for parents that are not permutations of the same set.
                 value = segmentParent[i];
             }
 
@@ -95,7 +84,6 @@ public sealed class PartiallyMappedCrossover<TSelf> : CrossoverBase<TSelf>
         return child;
     }
 
-    /// <summary>Copies the chromosome genes into a fresh array without mutating the source.</summary>
     private static int[] CopyGenes(TSelf chromosome, int length)
     {
         int[] genes = new int[length];

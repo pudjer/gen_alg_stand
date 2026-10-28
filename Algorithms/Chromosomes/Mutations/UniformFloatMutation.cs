@@ -3,16 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.Mutations;
 
-/// <summary>Resamples floating-point genes uniformly, with a configurable per-gene probability.</summary>
-/// <typeparam name="TSelf">Concrete floating-point chromosome type.</typeparam>
 public sealed class UniformFloatMutation<TSelf> : MutationBase<TSelf>
     where TSelf : IFloatChromosome<TSelf>
 {
     private readonly double _geneProbability;
 
-    /// <summary>Initializes a new instance of the <see cref="UniformFloatMutation{TSelf}"/> class.</summary>
-    /// <param name="geneProbability">Probability in [0, 1] that a single gene is resampled.</param>
-    /// <param name="chromosomeProbability">Probability in [0, 1] that a chromosome is mutated.</param>
     public UniformFloatMutation(double geneProbability = 0.01, double chromosomeProbability = 0.1)
         : base(chromosomeProbability)
     {
@@ -27,7 +22,6 @@ public sealed class UniformFloatMutation<TSelf> : MutationBase<TSelf>
         _geneProbability = geneProbability;
     }
 
-    /// <inheritdoc />
     protected override TSelf MutateChromosome(TSelf chromosome, IRandom random)
     {
         var genes = new double[chromosome.Length];
@@ -44,7 +38,6 @@ public sealed class UniformFloatMutation<TSelf> : MutationBase<TSelf>
         return chromosome.WithGenes(genes);
     }
 
-    /// <summary>Samples a value uniformly from [<paramref name="min"/>, <paramref name="max"/>], clamped to the bounds.</summary>
     private static double SampleUniform(double min, double max, IRandom random)
     {
         var value = min + (random.NextDouble() * (max - min));

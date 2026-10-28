@@ -3,17 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Blend crossover (BLX-alpha) for floating-point genotypes.</summary>
-/// <typeparam name="TSelf">Concrete floating-point chromosome type.</typeparam>
 public sealed class BlendCrossover<TSelf> : CrossoverBase<TSelf>
     where TSelf : IFloatChromosome<TSelf>
 {
     private readonly double alpha;
 
-    /// <summary>Initializes a new instance of the <see cref="BlendCrossover{TSelf}"/> class.</summary>
-    /// <param name="alpha">Extension factor of the blending interval; must be finite and non-negative.</param>
-    /// <param name="crossoverProbability">Probability that a pair is actually recombined; must be in [0, 1].</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="alpha"/> is not finite or is negative.</exception>
     public BlendCrossover(double alpha = 0.5, double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
@@ -30,12 +24,6 @@ public sealed class BlendCrossover<TSelf> : CrossoverBase<TSelf>
         this.alpha = alpha;
     }
 
-    /// <summary>Produces two BLX-alpha offspring from the supplied parents.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent; must have the same length as <paramref name="first"/>.</param>
-    /// <param name="random">Random source used to draw one independent beta per gene and child.</param>
-    /// <returns>The two offspring chromosomes.</returns>
-    /// <exception cref="ArgumentException">The parents have different lengths.</exception>
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)

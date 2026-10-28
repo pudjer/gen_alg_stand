@@ -7,68 +7,43 @@ using Studio;
 
 namespace Catalog;
 
-/// <summary>
-/// Everything a problem needs to run, already closed over its chromosome type: the loss function
-/// plus the operator descriptors that are valid for the current problem parameters.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type of the problem.</typeparam>
 public sealed class ProblemOperators<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    /// <summary>Gets the loss function of the problem.</summary>
     public required ILossFunction<TChromosome> LossFunction { get; init; }
 
-    /// <summary>Gets the valid crossovers.</summary>
     public required IReadOnlyList<OperatorDescriptor> Crossovers { get; init; }
 
-    /// <summary>Gets the valid mutations.</summary>
     public required IReadOnlyList<OperatorDescriptor> Mutations { get; init; }
 
-    /// <summary>Gets the valid selections.</summary>
     public required IReadOnlyList<OperatorDescriptor> Selections { get; init; }
 
-    /// <summary>Gets the valid initial population generators.</summary>
     public required IReadOnlyList<OperatorDescriptor> InitialPopulations { get; init; }
 
-    /// <summary>Gets the valid algorithms.</summary>
     public required IReadOnlyList<OperatorDescriptor> Algorithms { get; init; }
 }
 
-/// <summary>
-/// The generic half of a problem entry. It exposes the non-generic <see cref="IProblemEntry"/> view
-/// and resolves the chromosome type parameter in exactly one place: <see cref="CreateRunner"/>.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type of the problem.</typeparam>
 public abstract class ProblemEntry<TChromosome> : IProblemEntry
     where TChromosome : IChromosome<TChromosome>
 {
     private ProblemOperators<TChromosome>? _defaults;
 
-    /// <inheritdoc />
     public abstract string Key { get; }
 
-    /// <inheritdoc />
     public abstract string DisplayName { get; }
 
-    /// <inheritdoc />
     public abstract IReadOnlyList<ParameterSpec> Parameters { get; }
 
-    /// <inheritdoc />
     public IReadOnlyList<IOperatorDescriptor> Crossovers => Defaults.Crossovers;
 
-    /// <inheritdoc />
     public IReadOnlyList<IOperatorDescriptor> Mutations => Defaults.Mutations;
 
-    /// <inheritdoc />
     public IReadOnlyList<IOperatorDescriptor> Selections => Defaults.Selections;
 
-    /// <inheritdoc />
     public IReadOnlyList<IOperatorDescriptor> InitialPopulations => Defaults.InitialPopulations;
 
-    /// <inheritdoc />
     public IReadOnlyList<IOperatorDescriptor> Algorithms => Defaults.Algorithms;
 
-    /// <inheritdoc />
     public IExperimentRunner CreateRunner(ExperimentConfig config)
     {
         ArgumentNullException.ThrowIfNull(config);
@@ -109,9 +84,6 @@ public abstract class ProblemEntry<TChromosome> : IProblemEntry
             algorithm);
     }
 
-    /// <summary>Builds the operator set for a concrete problem-parameter set.</summary>
-    /// <param name="problemParameters">Validated problem parameters.</param>
-    /// <returns>The operators valid for those parameters.</returns>
     protected abstract ProblemOperators<TChromosome> BuildOperators(ParameterSet problemParameters);
 
     private ProblemOperators<TChromosome> Defaults =>
@@ -150,11 +122,6 @@ public abstract class ProblemEntry<TChromosome> : IProblemEntry
     }
 }
 
-/// <summary>
-/// Runs one configured experiment for a concrete chromosome type, collecting per-generation
-/// statistics and honouring cancellation.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type of the problem.</typeparam>
 internal sealed class ProblemRunner<TChromosome> : IExperimentRunner
     where TChromosome : IChromosome<TChromosome>
 {
@@ -181,7 +148,6 @@ internal sealed class ProblemRunner<TChromosome> : IExperimentRunner
         _algorithm = algorithm;
     }
 
-    /// <inheritdoc />
     public Task<ExperimentResult> RunAsync(
         ExperimentConfig config,
         IProgress<GenerationStats>? progress = null,
@@ -204,10 +170,6 @@ internal sealed class ProblemRunner<TChromosome> : IExperimentRunner
         Stopwatch stopwatch = Stopwatch.StartNew();
         bool cancelled = false;
 
-        // The observer runs on the algorithm's thread. Progress is reported through IProgress<T>,
-        // which marshals to the captured synchronization context on its own, so no UI state is
-        // touched here. The history list is guarded because the island model may call back from
-        // several threads in principle.
         object gate = new();
         observer.Updated += statistics =>
         {

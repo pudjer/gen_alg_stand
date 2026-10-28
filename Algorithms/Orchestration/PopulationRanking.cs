@@ -2,17 +2,8 @@ using Core.Contracts;
 
 namespace Algorithms.Orchestration;
 
-/// <summary>
-/// Loss-based ordering helpers shared by the orchestration components.
-/// </summary>
-/// <remarks>
-/// Ordering is pure scheduling: the score itself is always delegated to the problem's
-/// <see cref="ILossFunction{TChromosome}"/>, and nothing here reinterprets or rescales it.
-/// Keeping this in one place stops the elitism and migration code paths from drifting apart.
-/// </remarks>
 internal static class PopulationRanking
 {
-    /// <summary>Returns the <paramref name="count"/> lowest-loss chromosomes, best first.</summary>
     internal static TChromosome[] Best<TChromosome>(
         ILossFunction<TChromosome> lossFunction,
         IReadOnlyList<TChromosome> population,
@@ -46,11 +37,6 @@ internal static class PopulationRanking
         return best;
     }
 
-    /// <summary>Returns the indexes of the <paramref name="count"/> highest-loss chromosomes.</summary>
-    /// <remarks>
-    /// Indexes rather than chromosomes are returned because the callers overwrite these slots, and
-    /// the same chromosomes can legitimately appear more than once in a population.
-    /// </remarks>
     internal static int[] WorstIndexes<TChromosome>(
         ILossFunction<TChromosome> lossFunction,
         IReadOnlyList<TChromosome> population,

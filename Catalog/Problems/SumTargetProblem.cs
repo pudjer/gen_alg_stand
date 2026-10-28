@@ -6,7 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>Sum target: make the integer genes add up to a target total.</summary>
 public sealed class SumTargetProblem : ProblemEntry<IntChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -17,16 +16,12 @@ public sealed class SumTargetProblem : ProblemEntry<IntChromosome>
         new("target", "Target sum", ParameterKind.Int, "50", Min: -100000000, Max: 100000000, Step: 1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.sumtarget";
 
-    /// <inheritdoc />
     public override string DisplayName => "Sum target";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<IntChromosome> BuildOperators(ParameterSet problemParameters)
     {
         IntChromosome template = ProblemTemplates.IntTemplate(problemParameters);

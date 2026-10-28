@@ -9,4 +9,5 @@ public struct GeneticProblem<TChromosome>
     public required IMutation<TChromosome> Mutation { get; init; }
     public required IInitialPopulation<TChromosome> InitialPopulation { get; init; }
     public required IObserver<TChromosome> Observer { get; init; }
+    public required IRandomFactory RandomFactory { get; init; }
 }

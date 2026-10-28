@@ -3,17 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Uniform crossover: each gene is swapped independently with a fixed probability.</summary>
-/// <typeparam name="TSelf">Concrete genotype chromosome type.</typeparam>
-/// <typeparam name="TGene">Gene type.</typeparam>
 public sealed class UniformCrossover<TSelf, TGene> : CrossoverBase<TSelf>
     where TSelf : IGenotypeChromosome<TSelf, TGene>
 {
     private readonly double _swapProbability;
 
-    /// <summary>Initializes a new instance of the <see cref="UniformCrossover{TSelf, TGene}"/> class.</summary>
-    /// <param name="swapProbability">Probability in [0, 1] that a given gene is swapped.</param>
-    /// <param name="crossoverProbability">Probability in [0, 1] that a pair is recombined.</param>
     public UniformCrossover(double swapProbability = 0.5, double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
@@ -28,7 +22,6 @@ public sealed class UniformCrossover<TSelf, TGene> : CrossoverBase<TSelf>
         _swapProbability = swapProbability;
     }
 
-    /// <inheritdoc />
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)

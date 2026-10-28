@@ -3,21 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-/// <summary>
-/// Minimization loss computing the closed-tour length of a permutation over a distance matrix.
-/// </summary>
-/// <typeparam name="TChromosome">The permutation chromosome type being evaluated.</typeparam>
 public sealed class TspLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IPermutationChromosome<TChromosome>
 {
     private readonly double[,] _distances;
 
-    /// <summary>
-    /// Initializes a new instance from a square matrix of finite, non-negative distances.
-    /// </summary>
-    /// <param name="distanceMatrix">A square matrix holding the pairwise city distances.</param>
-    /// <exception cref="ArgumentNullException">The supplied matrix is null.</exception>
-    /// <exception cref="ArgumentException">The matrix is not square or holds negative/invalid distances.</exception>
     public TspLossFunction(double[,] distanceMatrix)
     {
         ArgumentNullException.ThrowIfNull(distanceMatrix);
@@ -45,11 +35,6 @@ public sealed class TspLossFunction<TChromosome> : ILossFunction<TChromosome>
         _distances = (double[,])distanceMatrix.Clone();
     }
 
-    /// <summary>
-    /// Returns the sum of consecutive edge distances plus the closing edge back to the first city.
-    /// </summary>
-    /// <param name="chromosome">The permutation chromosome describing the tour order.</param>
-    /// <returns>The total cycle cost, or zero when the tour has fewer than two cities.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);

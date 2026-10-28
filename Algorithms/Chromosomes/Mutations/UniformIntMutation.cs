@@ -3,16 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.Mutations;
 
-/// <summary>Resamples integer genes uniformly, with a configurable per-gene probability.</summary>
-/// <typeparam name="TSelf">Concrete integer chromosome type.</typeparam>
 public sealed class UniformIntMutation<TSelf> : MutationBase<TSelf>
     where TSelf : IIntChromosome<TSelf>
 {
     private readonly double _geneProbability;
 
-    /// <summary>Initializes a new instance of the <see cref="UniformIntMutation{TSelf}"/> class.</summary>
-    /// <param name="geneProbability">Probability in [0, 1] that a single gene is resampled.</param>
-    /// <param name="chromosomeProbability">Probability in [0, 1] that a chromosome is mutated.</param>
     public UniformIntMutation(double geneProbability = 0.01, double chromosomeProbability = 0.1)
         : base(chromosomeProbability)
     {
@@ -27,7 +22,6 @@ public sealed class UniformIntMutation<TSelf> : MutationBase<TSelf>
         _geneProbability = geneProbability;
     }
 
-    /// <inheritdoc />
     protected override TSelf MutateChromosome(TSelf chromosome, IRandom random)
     {
         var genes = new int[chromosome.Length];
@@ -44,7 +38,6 @@ public sealed class UniformIntMutation<TSelf> : MutationBase<TSelf>
         return chromosome.WithGenes(genes);
     }
 
-    /// <summary>Samples an integer uniformly from the inclusive range [<paramref name="min"/>, <paramref name="max"/>].</summary>
     private static int SampleInclusive(int min, int max, IRandom random)
     {
         if (min >= max)

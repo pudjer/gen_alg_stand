@@ -2,32 +2,17 @@ using Core.Contracts;
 
 namespace Algorithms.Selections;
 
-/// <summary>
-/// Selects individuals using stochastic universal sampling, with weights derived by linear
-/// inversion relative to the current population's loss span.
-/// </summary>
-/// <remarks>
-/// Lower losses are better. A single random pointer and equally spaced pointers sample the whole
-/// population in one pass. When the loss span is zero or contains non-finite values, selection
-/// falls back to uniform random selection.
-/// </remarks>
-/// <typeparam name="TChromosome">The chromosome type being evolved.</typeparam>
 public sealed class StochasticUniversalSamplingSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
     private readonly ILossFunction<TChromosome> _lossFunction;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StochasticUniversalSamplingSelection{TChromosome}"/> class.
-    /// </summary>
-    /// <param name="lossFunction">Fitness evaluator; lower values are better.</param>
     public StochasticUniversalSamplingSelection(ILossFunction<TChromosome> lossFunction)
     {
         ArgumentNullException.ThrowIfNull(lossFunction);
         _lossFunction = lossFunction;
     }
 
-    /// <inheritdoc />
     public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
@@ -81,9 +66,6 @@ public sealed class StochasticUniversalSamplingSelection<TChromosome> : ISelecti
         return result;
     }
 
-    /// <summary>
-    /// Converts losses into positive weights by linear inversion relative to the population's span.
-    /// </summary>
     private static double[] ComputeWeights(double[] losses)
     {
         int count = losses.Length;

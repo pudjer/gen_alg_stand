@@ -3,25 +3,13 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-/// <summary>
-/// Minimization loss implementing the Ackley function over all genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class AckleyLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Ackley loss function.
-    /// </summary>
     public AckleyLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Ackley value computed from the chromosome length and its genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Ackley value, or zero when the chromosome has no genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -49,25 +37,13 @@ public sealed class AckleyLossFunction<TChromosome> : ILossFunction<TChromosome>
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Griewank function over all genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class GriewankLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Griewank loss function.
-    /// </summary>
     public GriewankLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Griewank value computed from the chromosome length and its genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Griewank value, or zero when the chromosome has no genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
@@ -92,25 +68,13 @@ public sealed class GriewankLossFunction<TChromosome> : ILossFunction<TChromosom
     }
 }
 
-/// <summary>
-/// Minimization loss implementing the Schwefel function over all genes.
-/// </summary>
-/// <typeparam name="TChromosome">The float chromosome type being evaluated.</typeparam>
 public sealed class SchwefelLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Schwefel loss function.
-    /// </summary>
     public SchwefelLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Schwefel value computed from the chromosome length and its genes.
-    /// </summary>
-    /// <param name="chromosome">The float chromosome to evaluate.</param>
-    /// <returns>The Schwefel value, or zero when the chromosome has no genes.</returns>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);

@@ -2,20 +2,11 @@ using Core.Contracts;
 
 namespace Algorithms.Observers;
 
-/// <summary>
-/// An observer that forwards each generation to a fixed set of inner observers, in order.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type being observed.</typeparam>
 public sealed class CompositeObserver<TChromosome> : Core.Contracts.IObserver<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
     private readonly Core.Contracts.IObserver<TChromosome>[] _observers;
 
-    /// <summary>
-    /// Creates a composite observer over the supplied observers.
-    /// </summary>
-    /// <param name="observers">The observers to notify, in order.</param>
-    /// <exception cref="ArgumentNullException">The array or one of its elements is <see langword="null"/>.</exception>
     public CompositeObserver(params Core.Contracts.IObserver<TChromosome>[] observers)
     {
         ArgumentNullException.ThrowIfNull(observers);
@@ -31,10 +22,6 @@ public sealed class CompositeObserver<TChromosome> : Core.Contracts.IObserver<TC
         _observers = (Core.Contracts.IObserver<TChromosome>[])observers.Clone();
     }
 
-    /// <summary>
-    /// Forwards the population to every inner observer in registration order.
-    /// </summary>
-    /// <param name="population">The current population.</param>
     public void OnGeneration(IReadOnlyList<TChromosome> population)
     {
         ArgumentNullException.ThrowIfNull(population);

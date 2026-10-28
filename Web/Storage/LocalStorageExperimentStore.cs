@@ -6,18 +6,8 @@ using Studio;
 
 namespace Web.Storage;
 
-/// <summary>
-/// Persists experiment results in the browser's <c>localStorage</c> under a single key.
-/// <para>
-/// The domain records in <c>Studio</c> are not annotated for JSON and carry interface-typed
-/// properties, so they are never serialized directly. A private DTO layer mirrors
-/// <see cref="ExperimentResult"/> with concrete <see cref="Dictionary{TKey,TValue}"/> fields and
-/// maps both ways. Serialization uses a source-generated context, so it is trim and AOT safe.
-/// </para>
-/// </summary>
 public sealed class LocalStorageExperimentStore : IExperimentStore
 {
-    /// <summary>The <c>localStorage</c> key that holds every stored experiment.</summary>
     public const string StorageKey = "ga-bench.experiments";
 
     private static readonly JsonTypeInfo<List<StoredExperimentDto>> ListTypeInfo =
@@ -26,15 +16,12 @@ public sealed class LocalStorageExperimentStore : IExperimentStore
     private readonly IJSRuntime _js;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
-    /// <summary>Creates the store.</summary>
-    /// <param name="js">The JS runtime used to reach <c>localStorage</c>.</param>
     public LocalStorageExperimentStore(IJSRuntime js)
     {
         ArgumentNullException.ThrowIfNull(js);
         _js = js;
     }
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<StoredExperiment>> ListAsync(CancellationToken cancellationToken = default)
     {
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -53,7 +40,6 @@ public sealed class LocalStorageExperimentStore : IExperimentStore
         }
     }
 
-    /// <inheritdoc />
     public async Task<string> SaveAsync(ExperimentResult result, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -63,8 +49,6 @@ public sealed class LocalStorageExperimentStore : IExperimentStore
         {
             List<StoredExperimentDto> stored = await ReadAsync(cancellationToken).ConfigureAwait(false);
 
-            // Keep SavedAtUtc strictly increasing so "newest first" is deterministic even when
-            // two saves land inside the same clock tick.
             DateTimeOffset now = DateTimeOffset.UtcNow;
             if (stored.Count > 0)
             {
@@ -89,7 +73,6 @@ public sealed class LocalStorageExperimentStore : IExperimentStore
         }
     }
 
-    /// <inheritdoc />
     public async Task DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(id);
@@ -131,13 +114,11 @@ public sealed class LocalStorageExperimentStore : IExperimentStore
                 return [];
             }
 
-            // A hand-edited payload may contain null entries; drop them instead of failing later.
             items.RemoveAll(static item => item is null);
             return items;
         }
         catch (JsonException)
         {
-            // Corrupt or truncated payload: treat the store as empty rather than breaking the UI.
             return [];
         }
         catch (NotSupportedException)
@@ -253,98 +234,68 @@ public sealed class LocalStorageExperimentStore : IExperimentStore
         return copy;
     }
 
-    /// <summary>Storage envelope: a result plus the metadata the store needs to manage it.</summary>
     internal sealed class StoredExperimentDto
     {
-        /// <summary>Gets or sets the stable identifier (a Guid formatted string).</summary>
         public string Id { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets when the result was saved; list order is derived from this.</summary>
         public DateTimeOffset SavedAtUtc { get; set; }
 
-        /// <summary>Gets or sets the configuration.</summary>
         public StoredConfig Config { get; set; } = new();
 
-        /// <summary>Gets or sets the per-generation history.</summary>
         public List<StoredGeneration> History { get; set; } = [];
 
-        /// <summary>Gets or sets the best loss.</summary>
         public double BestLoss { get; set; }
 
-        /// <summary>Gets or sets the total duration.</summary>
         public double TotalMilliseconds { get; set; }
 
-        /// <summary>Gets or sets whether the run completed.</summary>
         public bool Completed { get; set; }
     }
 
-    /// <summary>Serializable mirror of <see cref="ExperimentConfig"/>.</summary>
     internal sealed class StoredConfig
     {
-        /// <summary>Gets or sets the problem key.</summary>
         public string ProblemKey { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the problem parameters.</summary>
         public Dictionary<string, string> ProblemParameters { get; set; } = new(StringComparer.Ordinal);
 
-        /// <summary>Gets or sets the algorithm key.</summary>
         public string AlgorithmKey { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the algorithm parameters.</summary>
         public Dictionary<string, string> AlgorithmParameters { get; set; } = new(StringComparer.Ordinal);
 
-        /// <summary>Gets or sets the crossover key.</summary>
         public string CrossoverKey { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the crossover parameters.</summary>
         public Dictionary<string, string> CrossoverParameters { get; set; } = new(StringComparer.Ordinal);
 
-        /// <summary>Gets or sets the mutation key.</summary>
         public string MutationKey { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the mutation parameters.</summary>
         public Dictionary<string, string> MutationParameters { get; set; } = new(StringComparer.Ordinal);
 
-        /// <summary>Gets or sets the selection key.</summary>
         public string SelectionKey { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the selection parameters.</summary>
         public Dictionary<string, string> SelectionParameters { get; set; } = new(StringComparer.Ordinal);
 
-        /// <summary>Gets or sets the initial population key.</summary>
         public string InitialPopulationKey { get; set; } = string.Empty;
 
-        /// <summary>Gets or sets the initial population parameters.</summary>
         public Dictionary<string, string> InitialPopulationParameters { get; set; } = new(StringComparer.Ordinal);
 
-        /// <summary>Gets or sets the seed.</summary>
         public int Seed { get; set; }
     }
 
-    /// <summary>Serializable mirror of <see cref="GenerationStats"/>.</summary>
     internal sealed class StoredGeneration
     {
-        /// <summary>Gets or sets the generation index.</summary>
         public int Generation { get; set; }
 
-        /// <summary>Gets or sets the best loss.</summary>
         public double Best { get; set; }
 
-        /// <summary>Gets or sets the mean loss.</summary>
         public double Mean { get; set; }
 
-        /// <summary>Gets or sets the worst loss.</summary>
         public double Worst { get; set; }
 
-        /// <summary>Gets or sets the population standard deviation.</summary>
         public double StdDev { get; set; }
 
-        /// <summary>Gets or sets the elapsed milliseconds.</summary>
         public double ElapsedMilliseconds { get; set; }
     }
 }
 
-/// <summary>Source-generated serialization context for the storage DTOs.</summary>
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     PropertyNameCaseInsensitive = true,

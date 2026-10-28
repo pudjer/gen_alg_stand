@@ -3,23 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Classic order crossover (OX) for ordered chromosomes.</summary>
-/// <typeparam name="TSelf">The concrete ordered chromosome type.</typeparam>
 public sealed class OrderCrossover<TSelf> : CrossoverBase<TSelf>
     where TSelf : IOrderedChromosome<TSelf>
 {
-    /// <summary>Creates an order crossover.</summary>
-    /// <param name="crossoverProbability">Probability that a pair is recombined; must be in [0, 1].</param>
     public OrderCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    /// <summary>Produces one OX offspring pair from two ordered parents with the same length.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent; must have the same length as <paramref name="first"/>.</param>
-    /// <param name="random">Random source used to pick the copied segment.</param>
-    /// <returns>The two children created by order crossover.</returns>
     protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
     {
         if (first.Length != second.Length)
@@ -47,7 +38,6 @@ public sealed class OrderCrossover<TSelf> : CrossoverBase<TSelf>
         return (first.WithGenes(child1), second.WithGenes(child2));
     }
 
-    /// <summary>Builds one OX child: a segment of <paramref name="primary"/> plus the remaining genes in <paramref name="donor"/> order.</summary>
     private static int[] BuildChild(int[] primary, int[] donor, int start, int end)
     {
         int length = primary.Length;
@@ -85,8 +75,6 @@ public sealed class OrderCrossover<TSelf> : CrossoverBase<TSelf>
             freeSlots--;
         }
 
-        // Only reachable when the parents do not share the same gene set: keep the
-        // remaining positions equal to the primary parent so no cell is left at its default.
         for (int i = 0; i < length && freeSlots > 0; i++)
         {
             if (filled[i])
@@ -102,7 +90,6 @@ public sealed class OrderCrossover<TSelf> : CrossoverBase<TSelf>
         return child;
     }
 
-    /// <summary>Copies the chromosome genes into a fresh array without mutating the source.</summary>
     private static int[] CopyGenes(TSelf chromosome, int length)
     {
         int[] genes = new int[length];

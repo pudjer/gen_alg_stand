@@ -3,10 +3,6 @@ using Core.Contracts;
 
 namespace Algorithms.Observers;
 
-/// <summary>
-/// An observer that writes a one-line best/mean loss summary per generation to the console.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type being observed.</typeparam>
 public sealed class ConsoleObserver<TChromosome> : Core.Contracts.IObserver<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
@@ -16,11 +12,6 @@ public sealed class ConsoleObserver<TChromosome> : Core.Contracts.IObserver<TChr
     private readonly string _label;
     private int _generation;
 
-    /// <summary>
-    /// Creates a console observer.
-    /// </summary>
-    /// <param name="lossFunction">The loss function used to score individuals.</param>
-    /// <param name="label">Optional label prefixed to each output line; defaults to <c>GA</c>.</param>
     public ConsoleObserver(ILossFunction<TChromosome> lossFunction, string? label = null)
     {
         ArgumentNullException.ThrowIfNull(lossFunction);
@@ -29,10 +20,6 @@ public sealed class ConsoleObserver<TChromosome> : Core.Contracts.IObserver<TChr
         _label = string.IsNullOrWhiteSpace(label) ? DefaultLabel : label;
     }
 
-    /// <summary>
-    /// Computes the best and mean loss of the population and prints a single summary line.
-    /// </summary>
-    /// <param name="population">The current population.</param>
     public void OnGeneration(IReadOnlyList<TChromosome> population)
     {
         ArgumentNullException.ThrowIfNull(population);

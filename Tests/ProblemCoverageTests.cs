@@ -3,11 +3,6 @@ using Studio;
 
 namespace Tests;
 
-/// <summary>
-/// Coverage for every problem in the catalog: each must run, produce finite statistics, and never
-/// report a best loss worse than its initial population. The linear TSP additionally has a known
-/// optimum, which is used to check the problem's closed-tour semantics.
-/// </summary>
 public sealed class ProblemCoverageTests
 {
     private static readonly CatalogRegistry Catalog = new();

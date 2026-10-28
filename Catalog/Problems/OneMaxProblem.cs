@@ -6,7 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>OneMax: maximize the number of true bits in a binary chromosome.</summary>
 public sealed class OneMaxProblem : ProblemEntry<BinaryChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -14,16 +13,12 @@ public sealed class OneMaxProblem : ProblemEntry<BinaryChromosome>
         new("size", "Chromosome length", ParameterKind.Int, "20", Min: 1, Max: 10000, Step: 1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.onemax";
 
-    /// <inheritdoc />
     public override string DisplayName => "OneMax";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<BinaryChromosome> BuildOperators(ParameterSet problemParameters)
     {
         int size = problemParameters.GetInt("size");

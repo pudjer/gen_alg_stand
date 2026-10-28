@@ -6,7 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>Rastrigin: minimize the multi-modal Rastrigin function over float genes.</summary>
 public sealed class RastriginProblem : ProblemEntry<FloatChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -16,16 +15,12 @@ public sealed class RastriginProblem : ProblemEntry<FloatChromosome>
         new("maxValue", "Gene upper bound", ParameterKind.Double, "5.12", Min: -1000, Max: 1000, Step: 0.1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.rastrigin";
 
-    /// <inheritdoc />
     public override string DisplayName => "Rastrigin";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<FloatChromosome> BuildOperators(ParameterSet problemParameters)
     {
         FloatChromosome template = ProblemTemplates.FloatTemplate(problemParameters);

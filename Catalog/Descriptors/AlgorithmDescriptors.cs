@@ -5,18 +5,8 @@ using Parameters;
 
 namespace Catalog.Descriptors;
 
-/// <summary>Descriptors for the algorithms that drive a run.</summary>
-/// <remarks>
-/// Algorithm descriptors do not build the algorithm directly: the runner supplies the seed once it
-/// knows the configuration, so each factory returns an <see cref="AlgorithmFactory"/>.
-/// </remarks>
 public static class AlgorithmDescriptors
 {
-    /// <summary>Gets the algorithms valid for <typeparamref name="TSelf"/>.</summary>
-    /// <typeparam name="TSelf">Concrete chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for the generational and island-model algorithms.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> For<TSelf>(string keyPrefix = "algorithm")
         where TSelf : IChromosome<TSelf>
     {

@@ -3,22 +3,13 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-/// <summary>
-/// Minimization loss implementing the Rosenbrock (banana) function over consecutive gene pairs.
-/// </summary>
 public sealed class RosenbrockLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
-    /// <summary>
-    /// Creates the Rosenbrock loss function.
-    /// </summary>
     public RosenbrockLossFunction()
     {
     }
 
-    /// <summary>
-    /// Returns the Rosenbrock sum over adjacent gene pairs, or 0 for chromosomes shorter than two genes.
-    /// </summary>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);

@@ -4,23 +4,11 @@ using Parameters;
 
 namespace Catalog.Descriptors;
 
-/// <summary>Descriptors for crossover operators.</summary>
-/// <remarks>
-/// Crossovers are generic over the chromosome type, so every method here is closed over
-/// <c>TSelf</c> by the caller and returns ready-to-use descriptors.
-/// </remarks>
 public static class CrossoverDescriptors
 {
-    /// <summary>Gets the crossover probability shared by every crossover descriptor.</summary>
     private static ParameterSpec Probability { get; } =
         new("crossoverProbability", "Crossover probability", ParameterKind.Double, "0.9", Min: 0, Max: 1, Step: 0.05);
 
-    /// <summary>Gets the gene-wise crossovers valid for a genotype chromosome.</summary>
-    /// <typeparam name="TSelf">Concrete genotype chromosome type.</typeparam>
-    /// <typeparam name="TGene">Gene type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for single-point, two-point and uniform crossover.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> For<TSelf, TGene>(string keyPrefix = "crossover")
         where TSelf : IGenotypeChromosome<TSelf, TGene>
     {
@@ -39,11 +27,6 @@ public static class CrossoverDescriptors
         ];
     }
 
-    /// <summary>Gets the crossovers specific to floating-point chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete floating-point chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for arithmetic and blend crossover.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForFloat<TSelf>(string keyPrefix = "crossover")
         where TSelf : IFloatChromosome<TSelf>
     {
@@ -62,11 +45,6 @@ public static class CrossoverDescriptors
         ];
     }
 
-    /// <summary>Gets the crossovers specific to integer chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete integer chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>The descriptor for integer arithmetic crossover.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForInt<TSelf>(string keyPrefix = "crossover")
         where TSelf : IIntChromosome<TSelf>
     {
@@ -81,11 +59,6 @@ public static class CrossoverDescriptors
         ];
     }
 
-    /// <summary>Gets the crossovers specific to ordered chromosomes.</summary>
-    /// <typeparam name="TSelf">Concrete ordered chromosome type.</typeparam>
-    /// <param name="keyPrefix">Key prefix used to build the operator keys.</param>
-    /// <returns>Descriptors for cycle, order, partially mapped and order-based crossover.</returns>
-    /// <exception cref="ArgumentException"><paramref name="keyPrefix"/> is null or whitespace.</exception>
     public static IReadOnlyList<OperatorDescriptor> ForOrdered<TSelf>(string keyPrefix = "crossover")
         where TSelf : IOrderedChromosome<TSelf>
     {

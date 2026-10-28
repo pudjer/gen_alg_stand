@@ -3,10 +3,6 @@ using Studio;
 
 namespace Tests;
 
-/// <summary>
-/// Determinism is the core promise of the bench: the same configuration and seed must reproduce the
-/// same history, generation by generation.
-/// </summary>
 public sealed class ExperimentDeterminismTests
 {
     public static TheoryData<string> RepresentativeProblems => new()

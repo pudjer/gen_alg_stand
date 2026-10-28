@@ -3,17 +3,11 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-/// <summary>
-/// Minimization loss measuring the mean squared error between a chromosome and a fixed target vector.
-/// </summary>
 public sealed class TargetVectorLossFunction<TChromosome> : ILossFunction<TChromosome>
     where TChromosome : IFloatChromosome<TChromosome>
 {
     private readonly double[] _target;
 
-    /// <summary>
-    /// Creates the loss with a defensive copy of the target vector; an empty target is allowed and yields a loss of 0.
-    /// </summary>
     public TargetVectorLossFunction(IReadOnlyList<double> target)
     {
         ArgumentNullException.ThrowIfNull(target);
@@ -25,9 +19,6 @@ public sealed class TargetVectorLossFunction<TChromosome> : ILossFunction<TChrom
         }
     }
 
-    /// <summary>
-    /// Returns the mean squared error between the chromosome genes and the target vector.
-    /// </summary>
     public double Evaluate(TChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);

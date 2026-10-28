@@ -2,15 +2,11 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-/// <summary>Pairs adjacent chromosomes and produces one offspring pair per pair.</summary>
-/// <typeparam name="TSelf">Concrete chromosome type.</typeparam>
 public abstract class CrossoverBase<TSelf> : ICrossover<TSelf>
     where TSelf : IChromosome<TSelf>
 {
     private readonly double _crossoverProbability;
 
-    /// <summary>Initializes a new instance of the <see cref="CrossoverBase{TSelf}"/> class.</summary>
-    /// <param name="crossoverProbability">Probability in [0, 1] that a pair is recombined.</param>
     protected CrossoverBase(double crossoverProbability = 1.0)
     {
         if (!double.IsFinite(crossoverProbability) || crossoverProbability < 0.0 || crossoverProbability > 1.0)
@@ -24,10 +20,8 @@ public abstract class CrossoverBase<TSelf> : ICrossover<TSelf>
         _crossoverProbability = crossoverProbability;
     }
 
-    /// <summary>Gets the probability that a pair of parents is recombined.</summary>
     protected double CrossoverProbability => _crossoverProbability;
 
-    /// <inheritdoc />
     public IReadOnlyList<TSelf> Crossover(IReadOnlyList<TSelf> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
@@ -68,10 +62,5 @@ public abstract class CrossoverBase<TSelf> : ICrossover<TSelf>
         return offspring;
     }
 
-    /// <summary>Crosses two parents and returns the resulting offspring pair.</summary>
-    /// <param name="first">First parent.</param>
-    /// <param name="second">Second parent.</param>
-    /// <param name="random">Random source.</param>
-    /// <returns>The two offspring.</returns>
     protected abstract (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random);
 }

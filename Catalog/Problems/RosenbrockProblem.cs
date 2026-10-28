@@ -6,7 +6,6 @@ using Parameters;
 
 namespace Catalog.Problems;
 
-/// <summary>Rosenbrock: minimize the banana function over consecutive float gene pairs.</summary>
 public sealed class RosenbrockProblem : ProblemEntry<FloatChromosome>
 {
     private static readonly IReadOnlyList<ParameterSpec> Specs =
@@ -16,16 +15,12 @@ public sealed class RosenbrockProblem : ProblemEntry<FloatChromosome>
         new("maxValue", "Gene upper bound", ParameterKind.Double, "2", Min: -1000, Max: 1000, Step: 0.1),
     ];
 
-    /// <inheritdoc />
     public override string Key => "problem.rosenbrock";
 
-    /// <inheritdoc />
     public override string DisplayName => "Rosenbrock";
 
-    /// <inheritdoc />
     public override IReadOnlyList<ParameterSpec> Parameters => Specs;
 
-    /// <inheritdoc />
     protected override ProblemOperators<FloatChromosome> BuildOperators(ParameterSet problemParameters)
     {
         FloatChromosome template = ProblemTemplates.FloatTemplate(problemParameters);

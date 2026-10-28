@@ -2,21 +2,12 @@ using Core.Contracts;
 
 namespace Algorithms.Selections;
 
-/// <summary>
-/// Selects individuals only from the fittest fraction of the population.
-/// </summary>
-/// <typeparam name="TChromosome">The chromosome type being evolved.</typeparam>
 public sealed class TruncationSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
     private readonly ILossFunction<TChromosome> _lossFunction;
     private readonly double _survivalRate;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TruncationSelection{TChromosome}"/> class.
-    /// </summary>
-    /// <param name="lossFunction">Fitness evaluator; lower values are better.</param>
-    /// <param name="survivalRate">Fraction of the population kept as survivors; must be in (0, 1].</param>
     public TruncationSelection(ILossFunction<TChromosome> lossFunction, double survivalRate = 0.5)
     {
         ArgumentNullException.ThrowIfNull(lossFunction);
@@ -27,7 +18,6 @@ public sealed class TruncationSelection<TChromosome> : ISelection<TChromosome>
         _survivalRate = survivalRate;
     }
 
-    /// <inheritdoc />
     public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
