@@ -85,6 +85,47 @@
 			"label": "other errors",
 			"type": "shell",
 			"command": "dotnet build Gen_alg_stand.slnx 2>&1 | grep -E 'error' | grep -v ParameterSpec | grep -v ParameterKind | sed 's/\\[.*//' | sort -u | head -20"
+		},
+		{
+			"label": "build Setup",
+			"type": "shell",
+			"command": "dotnet build Setup/Setup.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build Setup",
+			"type": "shell",
+			"command": "dotnet build Setup/Setup.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build Setup",
+			"type": "shell",
+			"command": "rm -f Setup/ProblemFactory.cs && dotnet build Setup/Setup.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "inspect Setup",
+			"type": "shell",
+			"command": "ls Setup/*.cs && grep -n 'class\\|Create' Setup/ProblemFactory.cs"
+		},
+		{
+			"label": "build Setup",
+			"type": "shell",
+			"command": "dotnet build Setup/Setup.csproj -warnaserror",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
 		}
 	]
 }
