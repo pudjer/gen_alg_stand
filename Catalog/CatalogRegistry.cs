@@ -12,11 +12,23 @@ public sealed class CatalogRegistry : ICatalog
     private static readonly IReadOnlyList<IProblemEntry> AllProblems =
     [
         new OneMaxProblem(),
+        new LongestRunProblem(),
         new SphereProblem(),
         new RastriginProblem(),
         new RosenbrockProblem(),
+        new AckleyProblem(),
+        new GriewankProblem(),
+        new SchwefelProblem(),
+        new BoothProblem(),
+        new BealeProblem(),
+        new HimmelblauProblem(),
+        new EasomProblem(),
+        new BukinProblem(),
+        new MatyasProblem(),
         new NQueensProblem(),
+        new InversionCountProblem(),
         new TspProblem(),
+        new LinearTspProblem(),
         new SumTargetProblem(),
         new TargetVectorProblem(),
     ];

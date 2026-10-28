@@ -1,9 +1,9 @@
 <div class="operator-picker mb-3">
     <label class="form-label mb-0 fw-bold">@Title</label>
-    <select class="form-select form-select-sm" value="@SelectedKey" @onchange="OnSelectionChanged">
+    <select class="form-select form-select-sm" @onchange="OnSelectionChanged">
         @foreach (var d in Descriptors)
         {
-            <option value="@d.Key">@d.DisplayName</option>
+            <option value="@d.Key" selected="@(d.Key == SelectedKey)">@d.DisplayName</option>
         }
     </select>
     <ParameterEditor Specs="@(SelectedDescriptor?.Parameters ?? Array.Empty<ParameterSpec>())"

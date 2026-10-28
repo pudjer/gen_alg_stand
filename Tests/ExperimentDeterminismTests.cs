@@ -12,8 +12,13 @@ public sealed class ExperimentDeterminismTests
     public static TheoryData<string> RepresentativeProblems => new()
     {
         "problem.onemax",
+        "problem.longestrun",
         "problem.sphere",
+        "problem.ackley",
+        "problem.bukin",
         "problem.nqueens",
+        "problem.inversions",
+        "problem.lineartsp",
         "problem.sumtarget",
     };
 
