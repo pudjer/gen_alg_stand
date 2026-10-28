@@ -3,4 +3,5 @@
   <Project Path="Algorithms/Algorithms.csproj" />
   <Project Path="Parameters/Parameters.csproj" />
   <Project Path="Setup/Setup.csproj" />
+  <Project Path="Implementations/Implementations.csproj" />
 </Solution>

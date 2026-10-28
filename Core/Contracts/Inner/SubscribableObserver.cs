@@ -1,6 +1,6 @@
 namespace Core.Contracts;
 
-public sealed class SubscribableObserver<TChromosome> : Core.Contracts.IObserver<TChromosome>
+public sealed class SubscribableObserver<TChromosome> : IObserver<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
     private readonly List<Action<IReadOnlyList<Individ<TChromosome>>>> _subscribers = [];
