@@ -13,6 +13,7 @@ namespace Algorithms.Orchestration;
 /// </param>
 /// <param name="MigrantsPerIsland">How many of the best chromosomes each island sends to its neighbour.</param>
 /// <param name="EliteCount">How many elites each island keeps per generation.</param>
+/// <param name="MaintainPopulationSize">Whether each island maintains its configured population size.</param>
 /// <param name="RandomFactory">
 /// Creates an independent <see cref="IRandom"/> per island. When <see langword="null"/>, seeds are
 /// drawn sequentially from the algorithm's own random source, which keeps runs reproducible.
@@ -26,6 +27,7 @@ public sealed record IslandOptions(
     int MigrationInterval = 10,
     int MigrantsPerIsland = 1,
     int EliteCount = 1,
+    bool MaintainPopulationSize = true,
     Func<int, IRandom>? RandomFactory = null,
     int MaxDegreeOfParallelism = -1)
 {

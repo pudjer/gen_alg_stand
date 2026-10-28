@@ -1,7 +1,37 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Genetic Algorithm Bench</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Genetic Algorithm Bench</h1>
 
-Welcome to your new app.
+<p class="lead">
+    A small workbench for exploring genetic algorithms: pick a problem, choose the operators,
+    tune the parameters, and watch the loss curve evolve generation by generation.
+</p>
+
+<div class="row g-3 mt-2">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Builder</h5>
+                <p class="card-text">
+                    Configure a problem, its operators and their parameters, then run it and
+                    inspect the live loss chart. Save the result when you like what you see.
+                </p>
+                <a class="btn btn-primary" href="builder">Open the Builder</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">History</h5>
+                <p class="card-text">
+                    Browse the experiments you saved, compare their best-loss curves side by
+                    side, and delete the ones you no longer need.
+                </p>
+                <a class="btn btn-outline-primary" href="history">Open the History</a>
+            </div>
+        </div>
+    </div>
+</div>

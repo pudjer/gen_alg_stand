@@ -52,7 +52,7 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         _islandOptions = new GenerationalOptions(
             MaxGenerations: 1,
             EliteCount: resolved.EliteCount,
-            MaintainPopulationSize: true);
+            MaintainPopulationSize: resolved.MaintainPopulationSize);
     }
 
     /// <summary>

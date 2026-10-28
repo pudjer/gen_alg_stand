@@ -1,0 +1,113 @@
+@inject IJSRuntime JS
+
+<div class="line-chart">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <div class="line-chart-title">@Title</div>
+    }
+    <div class="line-chart-canvas">
+        <canvas id="@_canvasId" role="img" aria-label="@Title"></canvas>
+    </div>
+</div>
+
+@code {
+    private readonly string _canvasId = "ga-chart-" + Guid.NewGuid().ToString("N");
+    private bool _renderPending = true;
+    private bool _rendered;
+    private bool _disposed;
+
+    /// <summary>Gets or sets the heading shown above the chart; may be empty.</summary>
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the series to plot. Each series is drawn as one line.</summary>
+    [Parameter]
+    public IReadOnlyList<ChartSeries> Series { get; set; } = Array.Empty<ChartSeries>();
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        // Any parameter update re-pushes the data, so a parent that appends points to an existing
+        // list still refreshes the chart. Updating an existing Chart.js instance is cheap.
+        _renderPending = true;
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_disposed || !_renderPending)
+        {
+            return;
+        }
+
+        _renderPending = false;
+
+        // The first render creates the Chart.js instance; later renders update it in place.
+        await RenderChartAsync(update: !firstRender && _rendered).ConfigureAwait(false);
+        _rendered = true;
+    }
+
+    private async Task RenderChartAsync(bool update)
+    {
+        ChartSeries[] payload = Series.ToArray();
+
+        try
+        {
+            if (update)
+            {
+                await JS.InvokeVoidAsync("gaCharts.updateLineChart", _canvasId, payload).ConfigureAwait(false);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("gaCharts.createLineChart", _canvasId, payload).ConfigureAwait(false);
+            }
+        }
+        catch (JSException)
+        {
+            // Prerendering and unit tests have no JS runtime; the chart is simply not drawn.
+        }
+        catch (InvalidOperationException)
+        {
+            // The JS runtime was disposed while the component was still rendering.
+        }
+        catch (NotSupportedException)
+        {
+            // Non-browser host (for example a test renderer) without JS interop.
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+
+        if (!_rendered)
+        {
+            return;
+        }
+
+        try
+        {
+            await JS.InvokeVoidAsync("gaCharts.destroyChart", _canvasId).ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+            // The page is going away; nothing to clean up.
+        }
+        catch (InvalidOperationException)
+        {
+            // The JS runtime was already disposed.
+        }
+        catch (NotSupportedException)
+        {
+            // Non-browser host without JS interop.
+        }
+
+        GC.SuppressFinalize(this);
+    }
+}
