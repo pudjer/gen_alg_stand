@@ -162,6 +162,18 @@
             <canvas id="chart" height="340"></canvas>
 
             <script id="chart-data" type="application/json">@Html.Raw(Model.ChartDataJson)</script>
+
+            @if (Model.Result.Visualization is not null)
+            {
+                <section class="visualization" id="visualization" data-kind="@Model.Result.Visualization.Kind">
+                    <div class="visualization-head">
+                        <h3>@Model.Result.Visualization.Title</h3>
+                    </div>
+                    <canvas id="visualization-canvas" height="320"></canvas>
+                </section>
+
+                <script id="visualization-data" type="application/json">@Html.Raw(Model.Result.Visualization.Json)</script>
+            }
         }
         else
         {
@@ -178,4 +190,5 @@
 
 @section Scripts {
     <script src="~/chart.js" asp-append-version="true"></script>
+    <script src="~/visualize.js" asp-append-version="true"></script>
 }

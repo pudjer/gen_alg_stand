@@ -11,13 +11,16 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
 {
     private readonly IReadOnlyList<Variant<TChromosome>> _variants;
     private readonly Func<TChromosome, string> _describe;
+    private readonly IProblemVisualizer<TChromosome>? _visualizer;
 
     public RunConfiguration(
         IReadOnlyList<Variant<TChromosome>> variants,
-        Func<TChromosome, string> describe)
+        Func<TChromosome, string> describe,
+        IProblemVisualizer<TChromosome>? visualizer = null)
     {
         _variants = variants;
         _describe = describe;
+        _visualizer = visualizer;
 
         LossFunctions = Options(variants.Select(variant => variant.LossFunction));
         Selections = Options(variants.Select(variant => variant.Selection));
@@ -174,6 +177,21 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
             samples.Add(new Sample(lastGeneration, lastAverage, bestEver));
         }
 
+        Visualization? visualization = null;
+        if (_visualizer is not null && champion is not null)
+        {
+            try
+            {
+                visualization = _visualizer.Build(
+                    new VisualizationContext<TChromosome>(champion, problem.LossFunction, samples));
+            }
+            catch
+            {
+                // Опциональная визуализация не должна ронять уже завершённый прогон.
+                visualization = null;
+            }
+        }
+
         return new RunResult(
             samples,
             bestEver,
@@ -181,7 +199,8 @@ public sealed class RunConfiguration<TChromosome> : IRunConfiguration
             lastGeneration,
             stopwatch.Elapsed.TotalSeconds,
             stopped,
-            $"{loss.Name} / {selection.Name} / {crossover.Name} / {mutation.Name} / {initial.Name}");
+            $"{loss.Name} / {selection.Name} / {crossover.Name} / {mutation.Name} / {initial.Name}",
+            visualization);
     }
 
     private static ModuleOption Pick(IReadOnlyList<ModuleOption> options, int index, string axis)

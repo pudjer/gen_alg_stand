@@ -1,4 +1,5 @@
 using Algorithms.Chromosomes;
+using Algorithms.LossFunctions;
 using Core.Contracts;
 using Implementations.Common;
 using Implementations.Modules;
@@ -15,7 +16,8 @@ public abstract class PermutationProblemFactoryBase : IProblemFactory<Permutatio
 
     protected virtual int DefaultLength => 20;
 
-    protected abstract IModuleFactory<ILossFunction<PermutationChromosome>> CreateLoss(int length);
+    protected abstract IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
+        int length);
 
     public IReadOnlyList<Variant<PermutationChromosome>> Create(ParameterSet values)
     {
@@ -24,7 +26,7 @@ public abstract class PermutationProblemFactoryBase : IProblemFactory<Permutatio
 
         return new ProblemFactory<PermutationChromosome>
         {
-            LossFunctions = [CreateLoss(length)],
+            LossFunctions = CreateLosses(length),
             Selections = ModuleCatalog.Selections<PermutationChromosome>(),
             Crossovers = ModuleCatalog.PermutationCrossovers(),
             Mutations = ModuleCatalog.PermutationMutations(),
@@ -33,49 +35,39 @@ public abstract class PermutationProblemFactoryBase : IProblemFactory<Permutatio
     }
 }
 
-public sealed class TspProblemFactory : PermutationProblemFactoryBase
+public sealed class TspProblemFactory(int seed = 1337) : PermutationProblemFactoryBase
 {
-    protected override IModuleFactory<ILossFunction<PermutationChromosome>> CreateLoss(int length) =>
-        new TspLossFactory<PermutationChromosome>(CreateDistances(length));
+    private readonly int _seed = seed;
 
-    private static double[,] CreateDistances(int count)
-    {
-        var random = new SeededRandom(1337 + count);
-        var xs = new double[count];
-        var ys = new double[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            xs[i] = random.NextDouble() * 100;
-            ys[i] = random.NextDouble() * 100;
-        }
-
-        var distances = new double[count, count];
-        for (int i = 0; i < count; i++)
-        {
-            for (int j = i + 1; j < count; j++)
-            {
-                double dx = xs[i] - xs[j];
-                double dy = ys[i] - ys[j];
-                double distance = Math.Sqrt((dx * dx) + (dy * dy));
-
-                distances[i, j] = distance;
-                distances[j, i] = distance;
-            }
-        }
-
-        return distances;
-    }
+    protected override IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
+        int length) =>
+    [
+        new TspLossFactory<PermutationChromosome>(
+            TspCityGenerator.Create(length, _seed + length, TspLayout.Random),
+            "TSP (random)"),
+        new TspLossFactory<PermutationChromosome>(
+            TspCityGenerator.Create(length, _seed + length, TspLayout.Circle),
+            "TSP (circle)"),
+        new TspLossFactory<PermutationChromosome>(
+            TspCityGenerator.Create(length, _seed + length, TspLayout.Line),
+            "TSP (line)"),
+    ];
 }
 
 public sealed class NQueensProblemFactory : PermutationProblemFactoryBase
 {
-    protected override IModuleFactory<ILossFunction<PermutationChromosome>> CreateLoss(int length) =>
-        new NQueensLossFactory<PermutationChromosome>();
+    protected override IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
+        int length) =>
+    [
+        new NQueensLossFactory<PermutationChromosome>(),
+    ];
 }
 
 public sealed class InversionCountProblemFactory : PermutationProblemFactoryBase
 {
-    protected override IModuleFactory<ILossFunction<PermutationChromosome>> CreateLoss(int length) =>
-        new InversionCountLossFactory<PermutationChromosome>();
+    protected override IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
+        int length) =>
+    [
+        new InversionCountLossFactory<PermutationChromosome>(),
+    ];
 }

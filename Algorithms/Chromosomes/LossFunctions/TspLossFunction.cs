@@ -33,7 +33,23 @@ public sealed class TspLossFunction<TChromosome> : ILossFunction<TChromosome>
         }
 
         _distances = (double[,])distanceMatrix.Clone();
+        Cities = [];
     }
+
+    public TspLossFunction(IReadOnlyList<TspCity> cities)
+    {
+        ArgumentNullException.ThrowIfNull(cities);
+
+        if (cities.Count == 0)
+        {
+            throw new ArgumentException("At least one city is required.", nameof(cities));
+        }
+
+        Cities = [.. cities];
+        _distances = TspCityGenerator.CreateDistances(Cities);
+    }
+
+    public IReadOnlyList<TspCity> Cities { get; }
 
     public double Evaluate(TChromosome chromosome)
     {

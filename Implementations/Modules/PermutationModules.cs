@@ -10,18 +10,29 @@ using Setup;
 
 namespace Implementations.Modules;
 
-public sealed class TspLossFactory<TChromosome>(double[,] distances)
-    : IModuleFactory<ILossFunction<TChromosome>>
+public sealed class TspLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
     where TChromosome : IPermutationChromosome<TChromosome>
 {
-    public string Name => "TSP";
+    private readonly IReadOnlyList<TspCity> _cities;
+    private readonly string _name;
+
+    public TspLossFactory(IReadOnlyList<TspCity> cities, string name)
+    {
+        ArgumentNullException.ThrowIfNull(cities);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        _cities = cities;
+        _name = name;
+    }
+
+    public string Name => _name;
 
     public IReadOnlyList<IParameter> Parameters { get; } = [];
 
     public ILossFunction<TChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new TspLossFunction<TChromosome>(distances);
+        return new TspLossFunction<TChromosome>(_cities);
     }
 }
 

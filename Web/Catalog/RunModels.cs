@@ -27,7 +27,8 @@ public sealed record RunResult(
     int GenerationsRun,
     double ElapsedSeconds,
     bool Stopped,
-    string Variant);
+    string Variant,
+    Visualization? Visualization);
 
 public interface IRunConfiguration
 {

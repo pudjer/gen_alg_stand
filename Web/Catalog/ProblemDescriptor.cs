@@ -22,19 +22,22 @@ public sealed class ProblemDescriptor<TChromosome> : IProblemDescriptor
 {
     private readonly IProblemFactory<TChromosome> _factory;
     private readonly Func<TChromosome, string> _describe;
+    private readonly IProblemVisualizer<TChromosome>? _visualizer;
 
     public ProblemDescriptor(
         string id,
         string name,
         string family,
         IProblemFactory<TChromosome> factory,
-        Func<TChromosome, string> describe)
+        Func<TChromosome, string> describe,
+        IProblemVisualizer<TChromosome>? visualizer = null)
     {
         Id = id;
         Name = name;
         Family = family;
         _factory = factory;
         _describe = describe;
+        _visualizer = visualizer;
     }
 
     public string Id { get; }
@@ -46,5 +49,5 @@ public sealed class ProblemDescriptor<TChromosome> : IProblemDescriptor
     public IReadOnlyList<IParameter> Parameters => _factory.Parameters;
 
     public IRunConfiguration Configure(ParameterSet values) =>
-        new RunConfiguration<TChromosome>(_factory.Create(values), _describe);
+        new RunConfiguration<TChromosome>(_factory.Create(values), _describe, _visualizer);
 }
