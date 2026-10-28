@@ -1,10 +1,6 @@
 <Solution>
-  <Project Path="Catalog/Catalog.csproj" />
   <Project Path="Core/Core.csproj" />
   <Project Path="Algorithms/Algorithms.csproj" />
   <Project Path="Parameters/Parameters.csproj" />
   <Project Path="Setup/Setup.csproj" />
-  <Project Path="Studio/Studio.csproj" />
-  <Project Path="Tests/Tests.csproj" />
-  <Project Path="Web/Web.csproj" />
 </Solution>

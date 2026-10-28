@@ -5,20 +5,19 @@ namespace Algorithms.Selections;
 public sealed class TruncationSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    private readonly ILossFunction<TChromosome> _lossFunction;
     private readonly double _survivalRate;
 
-    public TruncationSelection(ILossFunction<TChromosome> lossFunction, double survivalRate = 0.5)
+    public TruncationSelection(double survivalRate = 0.5)
     {
-        ArgumentNullException.ThrowIfNull(lossFunction);
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(survivalRate, 0.0, nameof(survivalRate));
         ArgumentOutOfRangeException.ThrowIfGreaterThan(survivalRate, 1.0, nameof(survivalRate));
 
-        _lossFunction = lossFunction;
         _survivalRate = survivalRate;
     }
 
-    public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
+    public IReadOnlyList<Individ<TChromosome>> Select(
+        IReadOnlyList<Individ<TChromosome>> population,
+        IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -26,14 +25,14 @@ public sealed class TruncationSelection<TChromosome> : ISelection<TChromosome>
         int count = population.Count;
         if (count == 0)
         {
-            return Array.Empty<TChromosome>();
+            return Array.Empty<Individ<TChromosome>>();
         }
 
-        TChromosome[] sorted = [.. population];
+        Individ<TChromosome>[] sorted = [.. population];
         double[] losses = new double[count];
         for (int i = 0; i < count; i++)
         {
-            losses[i] = _lossFunction.Evaluate(sorted[i]);
+            losses[i] = sorted[i].LossValue;
         }
 
         Array.Sort(losses, sorted);
@@ -44,7 +43,7 @@ public sealed class TruncationSelection<TChromosome> : ISelection<TChromosome>
             survivorCount = count;
         }
 
-        List<TChromosome> result = new(count);
+        List<Individ<TChromosome>> result = new(count);
         for (int i = 0; i < count; i++)
         {
             result.Add(sorted[random.Next(0, survivorCount)]);

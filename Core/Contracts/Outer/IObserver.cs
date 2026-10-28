@@ -3,5 +3,5 @@ namespace Core.Contracts;
 public interface IObserver<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    void OnGeneration(IReadOnlyList<TChromosome> population);
+    void OnGeneration(IReadOnlyList<Individ<TChromosome>> population);
 }

@@ -5,15 +5,13 @@ namespace Algorithms.Selections;
 public sealed class StochasticUniversalSamplingSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    private readonly ILossFunction<TChromosome> _lossFunction;
-
-    public StochasticUniversalSamplingSelection(ILossFunction<TChromosome> lossFunction)
+    public StochasticUniversalSamplingSelection()
     {
-        ArgumentNullException.ThrowIfNull(lossFunction);
-        _lossFunction = lossFunction;
     }
 
-    public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
+    public IReadOnlyList<Individ<TChromosome>> Select(
+        IReadOnlyList<Individ<TChromosome>> population,
+        IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -21,13 +19,13 @@ public sealed class StochasticUniversalSamplingSelection<TChromosome> : ISelecti
         int count = population.Count;
         if (count == 0)
         {
-            return Array.Empty<TChromosome>();
+            return Array.Empty<Individ<TChromosome>>();
         }
 
         double[] losses = new double[count];
         for (int i = 0; i < count; i++)
         {
-            losses[i] = _lossFunction.Evaluate(population[i]);
+            losses[i] = population[i].LossValue;
         }
 
         double[] weights = ComputeWeights(losses);
@@ -42,7 +40,7 @@ public sealed class StochasticUniversalSamplingSelection<TChromosome> : ISelecti
             return SelectUniformly(population, random);
         }
 
-        TChromosome[] result = new TChromosome[count];
+        Individ<TChromosome>[] result = new Individ<TChromosome>[count];
         double pointer = random.NextDouble() * total;
         double spacing = total / count;
         int selected = 0;
@@ -118,11 +116,11 @@ public sealed class StochasticUniversalSamplingSelection<TChromosome> : ISelecti
         return weights;
     }
 
-    private static IReadOnlyList<TChromosome> SelectUniformly(
-        IReadOnlyList<TChromosome> population,
+    private static IReadOnlyList<Individ<TChromosome>> SelectUniformly(
+        IReadOnlyList<Individ<TChromosome>> population,
         IRandom random)
     {
-        TChromosome[] result = new TChromosome[population.Count];
+        Individ<TChromosome>[] result = new Individ<TChromosome>[population.Count];
         for (int i = 0; i < result.Length; i++)
         {
             result[i] = population[random.Next(0, population.Count)];

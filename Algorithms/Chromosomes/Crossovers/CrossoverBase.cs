@@ -22,7 +22,7 @@ public abstract class CrossoverBase<TSelf> : ICrossover<TSelf>
 
     protected double CrossoverProbability => _crossoverProbability;
 
-    public IReadOnlyList<TSelf> Crossover(IReadOnlyList<TSelf> population, IRandom random)
+    public IReadOnlyList<TSelf> Crossover(IReadOnlyList<Individ<TSelf>> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -36,7 +36,7 @@ public abstract class CrossoverBase<TSelf> : ICrossover<TSelf>
 
         for (var i = 0; i < population.Count; i += 2)
         {
-            var first = population[i];
+            var first = population[i].Chromosome;
 
             if (i + 1 >= population.Count)
             {
@@ -44,7 +44,7 @@ public abstract class CrossoverBase<TSelf> : ICrossover<TSelf>
                 break;
             }
 
-            var second = population[i + 1];
+            var second = population[i + 1].Chromosome;
 
             if (random.NextDouble() < _crossoverProbability)
             {

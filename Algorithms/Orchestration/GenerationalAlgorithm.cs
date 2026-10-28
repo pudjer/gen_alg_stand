@@ -21,14 +21,16 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         IRandom random = problem.RandomFactory.Create()
             ?? throw new InvalidOperationException("The random factory must not return null.");
 
-        IReadOnlyList<TChromosome> population = problem.InitialPopulation.Create(random)
+        IReadOnlyList<TChromosome> initial = problem.InitialPopulation.Create(random)
             ?? throw new InvalidOperationException("The initial population must not be null.");
+
+        IReadOnlyList<Individ<TChromosome>> population = Wrap(initial, problem.LossFunction);
 
         problem.Observer.OnGeneration(population);
 
         for (int generation = 0; generation < _options.MaxGenerations; generation++)
         {
-            IReadOnlyList<TChromosome>? next = Step(problem, population, random);
+            IReadOnlyList<Individ<TChromosome>>? next = Step(problem, population, random);
             if (next is null)
             {
                 return;
@@ -39,9 +41,9 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         }
     }
 
-    internal IReadOnlyList<TChromosome>? Step(
+    internal IReadOnlyList<Individ<TChromosome>>? Step(
         GeneticProblem<TChromosome> problem,
-        IReadOnlyList<TChromosome> population,
+        IReadOnlyList<Individ<TChromosome>> population,
         IRandom random)
     {
         if (population.Count == 0)
@@ -49,10 +51,11 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             return null;
         }
 
-        IReadOnlyList<TChromosome> selected = problem.Selection.Select(population, random);
+        IReadOnlyList<Individ<TChromosome>> selected = problem.Selection.Select(population, random);
         IReadOnlyList<TChromosome> children = problem.Crossover.Crossover(selected, random);
-        IReadOnlyList<TChromosome> mutated = problem.Mutation.Mutate(children, random);
-        IReadOnlyList<TChromosome> next = ApplyElitism(problem, population, mutated);
+        IReadOnlyList<TChromosome> mutated = problem.Mutation.Mutate(Wrap(children, problem.LossFunction), random);
+        IReadOnlyList<Individ<TChromosome>> offspring = Wrap(mutated, problem.LossFunction);
+        IReadOnlyList<Individ<TChromosome>> next = ApplyElitism(population, offspring);
 
         if (_options.MaintainPopulationSize && next.Count != population.Count)
         {
@@ -62,10 +65,28 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         return next;
     }
 
-    private IReadOnlyList<TChromosome> ApplyElitism(
-        GeneticProblem<TChromosome> problem,
-        IReadOnlyList<TChromosome> parents,
-        IReadOnlyList<TChromosome> offspring)
+    internal static IReadOnlyList<Individ<TChromosome>> Wrap(
+        IReadOnlyList<TChromosome> chromosomes,
+        ILossFunction<TChromosome> lossFunction)
+    {
+        int count = chromosomes.Count;
+        if (count == 0)
+        {
+            return Array.Empty<Individ<TChromosome>>();
+        }
+
+        Individ<TChromosome>[] individs = new Individ<TChromosome>[count];
+        for (int i = 0; i < count; i++)
+        {
+            individs[i] = new Individ<TChromosome>(chromosomes[i], lossFunction);
+        }
+
+        return individs;
+    }
+
+    private IReadOnlyList<Individ<TChromosome>> ApplyElitism(
+        IReadOnlyList<Individ<TChromosome>> parents,
+        IReadOnlyList<Individ<TChromosome>> offspring)
     {
         int eliteCount = Math.Min(_options.EliteCount, Math.Min(parents.Count, offspring.Count));
         if (eliteCount <= 0)
@@ -73,9 +94,9 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             return offspring;
         }
 
-        TChromosome[] elites = PopulationRanking.Best(problem.LossFunction, parents, eliteCount);
-        TChromosome[] result = [.. offspring];
-        int[] worst = PopulationRanking.WorstIndexes(problem.LossFunction, result, eliteCount);
+        Individ<TChromosome>[] elites = PopulationRanking.Best(parents, eliteCount);
+        Individ<TChromosome>[] result = [.. offspring];
+        int[] worst = PopulationRanking.WorstIndexes(result, eliteCount);
 
         for (int i = 0; i < eliteCount; i++)
         {
@@ -85,14 +106,14 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         return result;
     }
 
-    private static IReadOnlyList<TChromosome> Resize(
-        IReadOnlyList<TChromosome> population,
+    private static IReadOnlyList<Individ<TChromosome>> Resize(
+        IReadOnlyList<Individ<TChromosome>> population,
         int targetCount,
         IRandom random)
     {
         if (population.Count >= targetCount)
         {
-            TChromosome[] truncated = new TChromosome[targetCount];
+            Individ<TChromosome>[] truncated = new Individ<TChromosome>[targetCount];
             for (int i = 0; i < targetCount; i++)
             {
                 truncated[i] = population[i];
@@ -101,7 +122,7 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             return truncated;
         }
 
-        List<TChromosome> padded = new(targetCount);
+        List<Individ<TChromosome>> padded = new(targetCount);
         for (int i = 0; i < population.Count; i++)
         {
             padded.Add(population[i]);
@@ -114,7 +135,7 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
 
         while (padded.Count < targetCount)
         {
-            padded.Add(population[random.Next(0, population.Count)].Clone());
+            padded.Add(population[random.Next(0, population.Count)]);
         }
 
         return padded;

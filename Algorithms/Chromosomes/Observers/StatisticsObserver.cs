@@ -5,16 +5,12 @@ namespace Algorithms.Observers;
 public sealed class StatisticsObserver<TChromosome> : Core.Contracts.IObserver<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    private readonly ILossFunction<TChromosome> _lossFunction;
     private readonly List<GenerationStatistics> _history = [];
     private readonly IReadOnlyList<GenerationStatistics> _historyView;
     private double[] _lossBuffer = [];
 
-    public StatisticsObserver(ILossFunction<TChromosome> lossFunction)
+    public StatisticsObserver()
     {
-        ArgumentNullException.ThrowIfNull(lossFunction);
-
-        _lossFunction = lossFunction;
         _historyView = _history.AsReadOnly();
     }
 
@@ -24,7 +20,7 @@ public sealed class StatisticsObserver<TChromosome> : Core.Contracts.IObserver<T
 
     public event Action<GenerationStatistics>? Updated;
 
-    public void OnGeneration(IReadOnlyList<TChromosome> population)
+    public void OnGeneration(IReadOnlyList<Individ<TChromosome>> population)
     {
         ArgumentNullException.ThrowIfNull(population);
 
@@ -49,7 +45,7 @@ public sealed class StatisticsObserver<TChromosome> : Core.Contracts.IObserver<T
 
         for (int i = 0; i < count; i++)
         {
-            double loss = _lossFunction.Evaluate(population[i]);
+            double loss = population[i].LossValue;
             _lossBuffer[i] = loss;
             sum += loss;
 

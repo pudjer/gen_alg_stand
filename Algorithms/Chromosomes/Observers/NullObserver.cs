@@ -13,7 +13,7 @@ public sealed class NullObserver<TChromosome> : Core.Contracts.IObserver<TChromo
 
     public static NullObserver<TChromosome> Instance => SharedInstance;
 
-    public void OnGeneration(IReadOnlyList<TChromosome> population)
+    public void OnGeneration(IReadOnlyList<Individ<TChromosome>> population)
     {
         ArgumentNullException.ThrowIfNull(population);
     }

@@ -5,19 +5,18 @@ namespace Algorithms.Selections;
 public sealed class TournamentSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    private readonly ILossFunction<TChromosome> _lossFunction;
     private readonly int _tournamentSize;
 
-    public TournamentSelection(ILossFunction<TChromosome> lossFunction, int tournamentSize = 3)
+    public TournamentSelection(int tournamentSize = 3)
     {
-        ArgumentNullException.ThrowIfNull(lossFunction);
         ArgumentOutOfRangeException.ThrowIfLessThan(tournamentSize, 1, nameof(tournamentSize));
 
-        _lossFunction = lossFunction;
         _tournamentSize = tournamentSize;
     }
 
-    public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
+    public IReadOnlyList<Individ<TChromosome>> Select(
+        IReadOnlyList<Individ<TChromosome>> population,
+        IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -25,16 +24,16 @@ public sealed class TournamentSelection<TChromosome> : ISelection<TChromosome>
         int count = population.Count;
         if (count == 0)
         {
-            return Array.Empty<TChromosome>();
+            return Array.Empty<Individ<TChromosome>>();
         }
 
         double[] losses = new double[count];
         for (int i = 0; i < count; i++)
         {
-            losses[i] = _lossFunction.Evaluate(population[i]);
+            losses[i] = population[i].LossValue;
         }
 
-        List<TChromosome> result = new(count);
+        List<Individ<TChromosome>> result = new(count);
         for (int i = 0; i < count; i++)
         {
             int bestIndex = random.Next(0, count);

@@ -22,7 +22,7 @@ public sealed class CompositeObserver<TChromosome> : Core.Contracts.IObserver<TC
         _observers = (Core.Contracts.IObserver<TChromosome>[])observers.Clone();
     }
 
-    public void OnGeneration(IReadOnlyList<TChromosome> population)
+    public void OnGeneration(IReadOnlyList<Individ<TChromosome>> population)
     {
         ArgumentNullException.ThrowIfNull(population);
 

@@ -8,19 +8,15 @@ public sealed class ConsoleObserver<TChromosome> : Core.Contracts.IObserver<TChr
 {
     private const string DefaultLabel = "GA";
 
-    private readonly ILossFunction<TChromosome> _lossFunction;
     private readonly string _label;
     private int _generation;
 
-    public ConsoleObserver(ILossFunction<TChromosome> lossFunction, string? label = null)
+    public ConsoleObserver(string? label = null)
     {
-        ArgumentNullException.ThrowIfNull(lossFunction);
-
-        _lossFunction = lossFunction;
         _label = string.IsNullOrWhiteSpace(label) ? DefaultLabel : label;
     }
 
-    public void OnGeneration(IReadOnlyList<TChromosome> population)
+    public void OnGeneration(IReadOnlyList<Individ<TChromosome>> population)
     {
         ArgumentNullException.ThrowIfNull(population);
 
@@ -34,7 +30,7 @@ public sealed class ConsoleObserver<TChromosome> : Core.Contracts.IObserver<TChr
 
         for (int i = 0; i < population.Count; i++)
         {
-            double loss = _lossFunction.Evaluate(population[i]);
+            double loss = population[i].LossValue;
             sum += loss;
 
             if (loss < best)

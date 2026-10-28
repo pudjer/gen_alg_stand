@@ -27,12 +27,14 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
     {
         int islandCount = _options.IslandCount;
         IRandom[] randoms = CreateIslandRandoms(problem.RandomFactory, islandCount);
-        IReadOnlyList<TChromosome>[] islands = new IReadOnlyList<TChromosome>[islandCount];
+        IReadOnlyList<Individ<TChromosome>>[] islands = new IReadOnlyList<Individ<TChromosome>>[islandCount];
 
         for (int i = 0; i < islandCount; i++)
         {
-            islands[i] = problem.InitialPopulation.Create(randoms[i])
+            IReadOnlyList<TChromosome> initial = problem.InitialPopulation.Create(randoms[i])
                 ?? throw new InvalidOperationException("The initial population must not be null.");
+
+            islands[i] = GenerationalAlgorithm<TChromosome>.Wrap(initial, problem.LossFunction);
         }
 
         GenerationalAlgorithm<TChromosome>[] steps = new GenerationalAlgorithm<TChromosome>[islandCount];
@@ -41,7 +43,7 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             steps[i] = new GenerationalAlgorithm<TChromosome>(_islandOptions);
         }
 
-        Func<int, IReadOnlyList<TChromosome>?> step = index =>
+        Func<int, IReadOnlyList<Individ<TChromosome>>?> step = index =>
             steps[index].Step(problem, islands[index], randoms[index]);
 
         problem.Observer.OnGeneration(Merge(islands));
@@ -52,7 +54,7 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
 
             if (ShouldMigrate(generation))
             {
-                Migrate(problem, islands);
+                Migrate(islands);
             }
 
             problem.Observer.OnGeneration(Merge(islands));
@@ -60,12 +62,12 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
     }
 
     private void EvolveGeneration(
-        IReadOnlyList<TChromosome>[] islands,
-        Func<int, IReadOnlyList<TChromosome>?> step)
+        IReadOnlyList<Individ<TChromosome>>[] islands,
+        Func<int, IReadOnlyList<Individ<TChromosome>>?> step)
     {
         void Advance(int index)
         {
-            IReadOnlyList<TChromosome>? next = step(index);
+            IReadOnlyList<Individ<TChromosome>>? next = step(index);
             if (next is not null)
             {
                 islands[index] = next;
@@ -89,7 +91,7 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             Advance);
     }
 
-    private void Migrate(GeneticProblem<TChromosome> problem, IReadOnlyList<TChromosome>[] islands)
+    private void Migrate(IReadOnlyList<Individ<TChromosome>>[] islands)
     {
         int count = islands.Length;
         if (count < 2 || _options.MigrantsPerIsland <= 0)
@@ -97,23 +99,22 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             return;
         }
 
-        TChromosome[][] outgoing = new TChromosome[count][];
+        Individ<TChromosome>[][] outgoing = new Individ<TChromosome>[count][];
         for (int i = 0; i < count; i++)
         {
-            outgoing[i] = TopBest(problem, islands[i], _options.MigrantsPerIsland);
+            outgoing[i] = TopBest(islands[i], _options.MigrantsPerIsland);
         }
 
         for (int i = 0; i < count; i++)
         {
             int target = (i + 1) % count;
-            islands[target] = Inject(problem, islands[target], outgoing[i]);
+            islands[target] = Inject(islands[target], outgoing[i]);
         }
     }
 
-    private static IReadOnlyList<TChromosome> Inject(
-        GeneticProblem<TChromosome> problem,
-        IReadOnlyList<TChromosome> population,
-        IReadOnlyList<TChromosome> migrants)
+    private static IReadOnlyList<Individ<TChromosome>> Inject(
+        IReadOnlyList<Individ<TChromosome>> population,
+        IReadOnlyList<Individ<TChromosome>> migrants)
     {
         if (population.Count == 0 || migrants.Count == 0)
         {
@@ -121,8 +122,8 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         }
 
         int count = Math.Min(migrants.Count, population.Count);
-        TChromosome[] result = [.. population];
-        int[] worst = PopulationRanking.WorstIndexes(problem.LossFunction, result, count);
+        Individ<TChromosome>[] result = [.. population];
+        int[] worst = PopulationRanking.WorstIndexes(result, count);
 
         for (int i = 0; i < count; i++)
         {
@@ -132,13 +133,12 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         return result;
     }
 
-    private static TChromosome[] TopBest(
-        GeneticProblem<TChromosome> problem,
-        IReadOnlyList<TChromosome> population,
+    private static Individ<TChromosome>[] TopBest(
+        IReadOnlyList<Individ<TChromosome>> population,
         int count) =>
-        PopulationRanking.Best(problem.LossFunction, population, count);
+        PopulationRanking.Best(population, count);
 
-    private static IReadOnlyList<TChromosome> Merge(IReadOnlyList<TChromosome>[] islands)
+    private static IReadOnlyList<Individ<TChromosome>> Merge(IReadOnlyList<Individ<TChromosome>>[] islands)
     {
         int total = 0;
         for (int i = 0; i < islands.Length; i++)
@@ -146,12 +146,12 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             total += islands[i].Count;
         }
 
-        TChromosome[] merged = new TChromosome[total];
+        Individ<TChromosome>[] merged = new Individ<TChromosome>[total];
         int offset = 0;
 
         for (int i = 0; i < islands.Length; i++)
         {
-            IReadOnlyList<TChromosome> island = islands[i];
+            IReadOnlyList<Individ<TChromosome>> island = islands[i];
             for (int j = 0; j < island.Count; j++)
             {
                 merged[offset++] = island[j];

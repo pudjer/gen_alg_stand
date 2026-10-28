@@ -9,7 +9,9 @@ public sealed class RandomSelection<TChromosome> : ISelection<TChromosome>
     {
     }
 
-    public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
+    public IReadOnlyList<Individ<TChromosome>> Select(
+        IReadOnlyList<Individ<TChromosome>> population,
+        IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -17,10 +19,10 @@ public sealed class RandomSelection<TChromosome> : ISelection<TChromosome>
         int count = population.Count;
         if (count == 0)
         {
-            return Array.Empty<TChromosome>();
+            return Array.Empty<Individ<TChromosome>>();
         }
 
-        List<TChromosome> result = new(count);
+        List<Individ<TChromosome>> result = new(count);
         for (int i = 0; i < count; i++)
         {
             result.Add(population[random.Next(0, count)]);

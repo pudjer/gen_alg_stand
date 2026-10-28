@@ -4,9 +4,8 @@ namespace Algorithms.Orchestration;
 
 internal static class PopulationRanking
 {
-    internal static TChromosome[] Best<TChromosome>(
-        ILossFunction<TChromosome> lossFunction,
-        IReadOnlyList<TChromosome> population,
+    internal static Individ<TChromosome>[] Best<TChromosome>(
+        IReadOnlyList<Individ<TChromosome>> population,
         int count)
         where TChromosome : IChromosome<TChromosome>
     {
@@ -17,12 +16,12 @@ internal static class PopulationRanking
 
         int take = Math.Min(count, population.Count);
 
-        TChromosome[] sorted = [.. population];
+        Individ<TChromosome>[] sorted = [.. population];
         double[] losses = new double[sorted.Length];
 
         for (int i = 0; i < sorted.Length; i++)
         {
-            losses[i] = lossFunction.Evaluate(sorted[i]);
+            losses[i] = sorted[i].LossValue;
         }
 
         Array.Sort(losses, sorted);
@@ -32,14 +31,13 @@ internal static class PopulationRanking
             return sorted;
         }
 
-        TChromosome[] best = new TChromosome[take];
+        Individ<TChromosome>[] best = new Individ<TChromosome>[take];
         Array.Copy(sorted, best, take);
         return best;
     }
 
     internal static int[] WorstIndexes<TChromosome>(
-        ILossFunction<TChromosome> lossFunction,
-        IReadOnlyList<TChromosome> population,
+        IReadOnlyList<Individ<TChromosome>> population,
         int count)
         where TChromosome : IChromosome<TChromosome>
     {
@@ -56,7 +54,7 @@ internal static class PopulationRanking
         for (int i = 0; i < population.Count; i++)
         {
             indexes[i] = i;
-            losses[i] = lossFunction.Evaluate(population[i]);
+            losses[i] = population[i].LossValue;
         }
 
         Array.Sort(losses, indexes);

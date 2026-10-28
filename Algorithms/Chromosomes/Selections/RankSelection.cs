@@ -5,15 +5,13 @@ namespace Algorithms.Selections;
 public sealed class RankSelection<TChromosome> : ISelection<TChromosome>
     where TChromosome : IChromosome<TChromosome>
 {
-    private readonly ILossFunction<TChromosome> _lossFunction;
-
-    public RankSelection(ILossFunction<TChromosome> lossFunction)
+    public RankSelection()
     {
-        ArgumentNullException.ThrowIfNull(lossFunction);
-        _lossFunction = lossFunction;
     }
 
-    public IReadOnlyList<TChromosome> Select(IReadOnlyList<TChromosome> population, IRandom random)
+    public IReadOnlyList<Individ<TChromosome>> Select(
+        IReadOnlyList<Individ<TChromosome>> population,
+        IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -21,14 +19,14 @@ public sealed class RankSelection<TChromosome> : ISelection<TChromosome>
         int count = population.Count;
         if (count == 0)
         {
-            return Array.Empty<TChromosome>();
+            return Array.Empty<Individ<TChromosome>>();
         }
 
-        TChromosome[] sorted = [.. population];
+        Individ<TChromosome>[] sorted = [.. population];
         double[] losses = new double[count];
         for (int i = 0; i < count; i++)
         {
-            losses[i] = _lossFunction.Evaluate(sorted[i]);
+            losses[i] = sorted[i].LossValue;
         }
 
         Array.Sort(losses, sorted);
@@ -42,7 +40,7 @@ public sealed class RankSelection<TChromosome> : ISelection<TChromosome>
             total += weight;
         }
 
-        List<TChromosome> result = new(count);
+        List<Individ<TChromosome>> result = new(count);
 
         if (!double.IsFinite(total) || total <= 0)
         {

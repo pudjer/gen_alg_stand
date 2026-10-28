@@ -22,7 +22,7 @@ public abstract class MutationBase<TSelf> : IMutation<TSelf>
 
     protected double ChromosomeProbability => _chromosomeProbability;
 
-    public IReadOnlyList<TSelf> Mutate(IReadOnlyList<TSelf> population, IRandom random)
+    public IReadOnlyList<TSelf> Mutate(IReadOnlyList<Individ<TSelf>> population, IRandom random)
     {
         ArgumentNullException.ThrowIfNull(population);
         ArgumentNullException.ThrowIfNull(random);
@@ -34,8 +34,10 @@ public abstract class MutationBase<TSelf> : IMutation<TSelf>
 
         var result = new List<TSelf>(population.Count);
 
-        foreach (var chromosome in population)
+        foreach (var individ in population)
         {
+            var chromosome = individ.Chromosome;
+
             result.Add(random.NextDouble() < _chromosomeProbability
                 ? MutateChromosome(chromosome, random)
                 : chromosome.Clone());
