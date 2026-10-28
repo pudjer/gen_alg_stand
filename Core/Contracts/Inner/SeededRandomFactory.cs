@@ -1,6 +1,4 @@
-using Core.Contracts;
-
-namespace Algorithms.Random;
+namespace Core.Contracts;
 
 public sealed class SeededRandomFactory : IRandomFactory
 {

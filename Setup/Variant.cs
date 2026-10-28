@@ -16,16 +16,13 @@ public sealed class Variant<TChromosome>
 
     public required IModuleFactory<IInitialPopulation<TChromosome>> InitialPopulation { get; init; }
 
-    public required IModuleFactory<Core.Contracts.IObserver<TChromosome>> Observer { get; init; }
 
     public GeneticProblem<TChromosome> Create(
         ParameterSet lossFunction,
         ParameterSet selection,
         ParameterSet crossover,
         ParameterSet mutation,
-        ParameterSet initialPopulation,
-        ParameterSet observer,
-        IRandomFactory randomFactory) =>
+        ParameterSet initialPopulation) =>
         new()
         {
             LossFunction = LossFunction.Create(lossFunction),
@@ -33,11 +30,9 @@ public sealed class Variant<TChromosome>
             Crossover = Crossover.Create(crossover),
             Mutation = Mutation.Create(mutation),
             InitialPopulation = InitialPopulation.Create(initialPopulation),
-            Observer = Observer.Create(observer),
-            RandomFactory = randomFactory,
         };
 
     public override string ToString() =>
         $"{LossFunction.Name} / {Selection.Name} / {Crossover.Name} / {Mutation.Name} / " +
-        $"{InitialPopulation.Name} / {Observer.Name}";
+        $"{InitialPopulation.Name}";
 }

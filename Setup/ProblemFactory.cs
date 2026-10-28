@@ -16,7 +16,6 @@ public sealed class ProblemFactory<TChromosome> : IProblemFactory<TChromosome>
 
     public required IReadOnlyList<IModuleFactory<IInitialPopulation<TChromosome>>> InitialPopulations { get; init; }
 
-    public required IReadOnlyList<IModuleFactory<Core.Contracts.IObserver<TChromosome>>> Observers { get; init; }
 
     public IReadOnlyList<IParameter> Parameters { get; init; } = [];
 
@@ -26,14 +25,13 @@ public sealed class ProblemFactory<TChromosome> : IProblemFactory<TChromosome>
 
         var variants = new List<Variant<TChromosome>>(
             LossFunctions.Count * Selections.Count * Crossovers.Count *
-            Mutations.Count * InitialPopulations.Count * Observers.Count);
+            Mutations.Count * InitialPopulations.Count);
 
         foreach (var loss in LossFunctions)
         foreach (var selection in Selections)
         foreach (var crossover in Crossovers)
         foreach (var mutation in Mutations)
         foreach (var initialPopulation in InitialPopulations)
-        foreach (var observer in Observers)
         {
             variants.Add(new Variant<TChromosome>
             {
@@ -42,7 +40,6 @@ public sealed class ProblemFactory<TChromosome> : IProblemFactory<TChromosome>
                 Crossover = crossover,
                 Mutation = mutation,
                 InitialPopulation = initialPopulation,
-                Observer = observer,
             });
         }
 

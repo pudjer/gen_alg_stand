@@ -16,9 +16,9 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         _options = resolved;
     }
 
-    public void Run(GeneticProblem<TChromosome> problem)
+    public void Run(GeneticProblem<TChromosome> problem, IRuntime<TChromosome> runtime)
     {
-        IRandom random = problem.RandomFactory.Create()
+        IRandom random = runtime.RandomFactory.Create()
             ?? throw new InvalidOperationException("The random factory must not return null.");
 
         IReadOnlyList<TChromosome> initial = problem.InitialPopulation.Create(random)
@@ -26,7 +26,7 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
 
         IReadOnlyList<Individ<TChromosome>> population = Wrap(initial, problem.LossFunction);
 
-        problem.Observer.OnGeneration(population);
+        runtime.Observer.OnGeneration(population);
 
         for (int generation = 0; generation < _options.MaxGenerations; generation++)
         {
@@ -37,7 +37,7 @@ public sealed class GenerationalAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             }
 
             population = next;
-            problem.Observer.OnGeneration(population);
+            runtime.Observer.OnGeneration(population);
         }
     }
 

@@ -1,6 +1,4 @@
-using Core.Contracts;
-
-namespace Algorithms.Observers;
+namespace Core.Contracts;
 
 public sealed class SubscribableObserver<TChromosome> : Core.Contracts.IObserver<TChromosome>
     where TChromosome : IChromosome<TChromosome>

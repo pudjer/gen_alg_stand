@@ -23,10 +23,10 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
             MaintainPopulationSize: resolved.MaintainPopulationSize);
     }
 
-    public void Run(GeneticProblem<TChromosome> problem)
+    public void Run(GeneticProblem<TChromosome> problem, IRuntime<TChromosome> runtime)
     {
         int islandCount = _options.IslandCount;
-        IRandom[] randoms = CreateIslandRandoms(problem.RandomFactory, islandCount);
+        IRandom[] randoms = CreateIslandRandoms(runtime.RandomFactory, islandCount);
         IReadOnlyList<Individ<TChromosome>>[] islands = new IReadOnlyList<Individ<TChromosome>>[islandCount];
 
         for (int i = 0; i < islandCount; i++)
@@ -46,7 +46,7 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
         Func<int, IReadOnlyList<Individ<TChromosome>>?> step = index =>
             steps[index].Step(problem, islands[index], randoms[index]);
 
-        problem.Observer.OnGeneration(Merge(islands));
+        runtime.Observer.OnGeneration(Merge(islands));
 
         for (int generation = 0; generation < _options.MaxGenerations; generation++)
         {
@@ -57,7 +57,7 @@ public sealed class IslandModelAlgorithm<TChromosome> : IAlgorithm<TChromosome>
                 Migrate(islands);
             }
 
-            problem.Observer.OnGeneration(Merge(islands));
+            runtime.Observer.OnGeneration(Merge(islands));
         }
     }
 
