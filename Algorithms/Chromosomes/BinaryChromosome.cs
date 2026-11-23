@@ -3,7 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Chromosomes;
 
-public sealed class BinaryChromosome : IBinaryChromosome<BinaryChromosome>
+public sealed class BinaryChromosome : IGenotypeChromosome<BinaryChromosome, bool>
 {
     private readonly bool[] _genes;
     private readonly ReadOnlyCollection<bool> _genesView;

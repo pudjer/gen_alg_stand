@@ -3,8 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Mutations;
 
-public sealed class UniformIntMutation<TSelf> : MutationBase<TSelf>
-    where TSelf : IIntChromosome<TSelf>
+public sealed class UniformIntMutation : MutationBase<IntChromosome>
 {
     private readonly double _geneProbability;
 
@@ -22,7 +21,7 @@ public sealed class UniformIntMutation<TSelf> : MutationBase<TSelf>
         _geneProbability = geneProbability;
     }
 
-    protected override TSelf MutateChromosome(TSelf chromosome, IRandom random)
+    protected override IntChromosome MutateChromosome(IntChromosome chromosome, IRandom random)
     {
         var genes = new int[chromosome.Length];
         var min = chromosome.MinValue;

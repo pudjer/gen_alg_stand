@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.Mutations;
 
 public sealed class BitFlipMutation<TSelf> : MutationBase<TSelf>
-    where TSelf : IBinaryChromosome<TSelf>
+    where TSelf : IGenotypeChromosome<TSelf, bool>
 {
     private readonly double _geneProbability;
 

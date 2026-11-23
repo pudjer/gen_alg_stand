@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.LossFunctions;
 
 public sealed class SumTargetLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IIntChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private readonly long _target;
 

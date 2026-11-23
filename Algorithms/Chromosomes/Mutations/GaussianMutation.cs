@@ -3,8 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Mutations;
 
-public sealed class GaussianMutation<TSelf> : MutationBase<TSelf>
-    where TSelf : IFloatChromosome<TSelf>
+public sealed class GaussianMutation : MutationBase<FloatChromosome>
 {
     private readonly double _geneProbability;
     private readonly double _sigma;
@@ -35,7 +34,7 @@ public sealed class GaussianMutation<TSelf> : MutationBase<TSelf>
         _sigma = sigma;
     }
 
-    protected override TSelf MutateChromosome(TSelf chromosome, IRandom random)
+    protected override FloatChromosome MutateChromosome(FloatChromosome chromosome, IRandom random)
     {
         var genes = new double[chromosome.Length];
         var min = chromosome.MinValue;

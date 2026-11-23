@@ -40,8 +40,8 @@ internal static class ModuleCatalog
     internal static IReadOnlyList<IModuleFactory<ICrossover<PermutationChromosome>>> PermutationCrossovers() =>
     [
         new OrderCrossoverFactory<PermutationChromosome>(),
-        new CycleCrossoverFactory<PermutationChromosome>(),
-        new PartiallyMappedCrossoverFactory<PermutationChromosome>(),
+        new CycleCrossoverFactory(),
+        new PartiallyMappedCrossoverFactory(),
         new OrderBasedCrossoverFactory<PermutationChromosome>(),
     ];
 
@@ -55,26 +55,26 @@ internal static class ModuleCatalog
 
     internal static IReadOnlyList<IModuleFactory<ICrossover<FloatChromosome>>> FloatCrossovers() =>
     [
-        new ArithmeticCrossoverFactory<FloatChromosome>(),
-        new BlendCrossoverFactory<FloatChromosome>(),
+        new ArithmeticCrossoverFactory(),
+        new BlendCrossoverFactory(),
         new UniformCrossoverFactory<FloatChromosome, double>(),
     ];
 
     internal static IReadOnlyList<IModuleFactory<IMutation<FloatChromosome>>> FloatMutations() =>
     [
-        new GaussianMutationFactory<FloatChromosome>(),
-        new UniformFloatMutationFactory<FloatChromosome>(),
+        new GaussianMutationFactory(),
+        new UniformFloatMutationFactory(),
     ];
 
     internal static IReadOnlyList<IModuleFactory<ICrossover<IntChromosome>>> IntCrossovers() =>
     [
-        new IntegerArithmeticCrossoverFactory<IntChromosome>(),
+        new IntegerArithmeticCrossoverFactory(),
         new UniformCrossoverFactory<IntChromosome, int>(),
         new SinglePointCrossoverFactory<IntChromosome, int>(),
     ];
 
     internal static IReadOnlyList<IModuleFactory<IMutation<IntChromosome>>> IntMutations() =>
     [
-        new UniformIntMutationFactory<IntChromosome>(),
+        new UniformIntMutationFactory(),
     ];
 }

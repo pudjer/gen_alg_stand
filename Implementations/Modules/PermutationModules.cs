@@ -10,8 +10,7 @@ using Setup;
 
 namespace Implementations.Modules;
 
-public sealed class TspLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IPermutationChromosome<TChromosome>
+public sealed class TspLossFactory : IModuleFactory<ILossFunction<PermutationChromosome>>
 {
     private readonly IReadOnlyList<TspCity> _cities;
     private readonly string _name;
@@ -29,43 +28,41 @@ public sealed class TspLossFactory<TChromosome> : IModuleFactory<ILossFunction<T
 
     public IReadOnlyList<IParameter> Parameters { get; } = [];
 
-    public ILossFunction<TChromosome> Create(ParameterSet values)
+    public ILossFunction<PermutationChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new TspLossFunction<TChromosome>(_cities);
+        return new TspLossFunction(_cities);
     }
 }
 
-public sealed class NQueensLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IPermutationChromosome<TChromosome>
+public sealed class NQueensLossFactory : IModuleFactory<ILossFunction<PermutationChromosome>>
 {
     public string Name => "N-Queens";
 
     public IReadOnlyList<IParameter> Parameters { get; } = [];
 
-    public ILossFunction<TChromosome> Create(ParameterSet values)
+    public ILossFunction<PermutationChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new NQueensLossFunction<TChromosome>();
+        return new NQueensLossFunction();
     }
 }
 
-public sealed class InversionCountLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IPermutationChromosome<TChromosome>
+public sealed class InversionCountLossFactory : IModuleFactory<ILossFunction<PermutationChromosome>>
 {
     public string Name => "Inversion Count";
 
     public IReadOnlyList<IParameter> Parameters { get; } = [];
 
-    public ILossFunction<TChromosome> Create(ParameterSet values)
+    public ILossFunction<PermutationChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new InversionCountLossFunction<TChromosome>();
+        return new InversionCountLossFunction();
     }
 }
 
 public sealed class OrderCrossoverFactory<TChromosome> : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
 
@@ -80,8 +77,7 @@ public sealed class OrderCrossoverFactory<TChromosome> : IModuleFactory<ICrossov
     }
 }
 
-public sealed class CycleCrossoverFactory<TChromosome> : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+public sealed class CycleCrossoverFactory : IModuleFactory<ICrossover<PermutationChromosome>>
 {
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
 
@@ -89,15 +85,14 @@ public sealed class CycleCrossoverFactory<TChromosome> : IModuleFactory<ICrossov
 
     public IReadOnlyList<IParameter> Parameters { get; } = [CrossoverProbability];
 
-    public ICrossover<TChromosome> Create(ParameterSet values)
+    public ICrossover<PermutationChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new CycleCrossover<TChromosome>(values.Read(CrossoverProbability, 0.9));
+        return new CycleCrossover(values.Read(CrossoverProbability, 0.9));
     }
 }
 
-public sealed class PartiallyMappedCrossoverFactory<TChromosome> : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+public sealed class PartiallyMappedCrossoverFactory : IModuleFactory<ICrossover<PermutationChromosome>>
 {
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
 
@@ -105,15 +100,15 @@ public sealed class PartiallyMappedCrossoverFactory<TChromosome> : IModuleFactor
 
     public IReadOnlyList<IParameter> Parameters { get; } = [CrossoverProbability];
 
-    public ICrossover<TChromosome> Create(ParameterSet values)
+    public ICrossover<PermutationChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new PartiallyMappedCrossover<TChromosome>(values.Read(CrossoverProbability, 0.9));
+        return new PartiallyMappedCrossover(values.Read(CrossoverProbability, 0.9));
     }
 }
 
 public sealed class OrderBasedCrossoverFactory<TChromosome> : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
 
@@ -129,7 +124,7 @@ public sealed class OrderBasedCrossoverFactory<TChromosome> : IModuleFactory<ICr
 }
 
 public sealed class SwapMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");
 
@@ -145,7 +140,7 @@ public sealed class SwapMutationFactory<TChromosome> : IModuleFactory<IMutation<
 }
 
 public sealed class InsertMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");
 
@@ -161,7 +156,7 @@ public sealed class InsertMutationFactory<TChromosome> : IModuleFactory<IMutatio
 }
 
 public sealed class InversionMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");
 
@@ -177,7 +172,7 @@ public sealed class InversionMutationFactory<TChromosome> : IModuleFactory<IMuta
 }
 
 public sealed class ScrambleMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IOrderedChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");
 
@@ -204,7 +199,7 @@ public sealed class RandomPermutationPopulationFactory(int length)
     public IInitialPopulation<PermutationChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new RandomPermutationPopulation<PermutationChromosome>(
+        return new RandomPermutationPopulation(
             values.Read(PopulationSize, 100),
             PermutationChromosome.Identity(length));
     }

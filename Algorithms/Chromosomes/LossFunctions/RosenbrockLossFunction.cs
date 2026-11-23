@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.LossFunctions;
 
 public sealed class RosenbrockLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public RosenbrockLossFunction()
     {

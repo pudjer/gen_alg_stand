@@ -5,7 +5,7 @@ namespace Algorithms.LossFunctions;
 
 
 public sealed class KnapsackLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     private readonly int[] _weights;
     private readonly int[] _values;

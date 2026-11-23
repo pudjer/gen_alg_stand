@@ -3,8 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-public sealed class IntegerArithmeticCrossover<TSelf> : CrossoverBase<TSelf>
-    where TSelf : IIntChromosome<TSelf>
+public sealed class IntegerArithmeticCrossover : CrossoverBase<IntChromosome>
 {
     private readonly double weight;
 
@@ -24,7 +23,10 @@ public sealed class IntegerArithmeticCrossover<TSelf> : CrossoverBase<TSelf>
         this.weight = weight;
     }
 
-    protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
+    protected override (IntChromosome First, IntChromosome Second) CrossPair(
+        IntChromosome first,
+        IntChromosome second,
+        IRandom random)
     {
         if (first.Length != second.Length)
         {

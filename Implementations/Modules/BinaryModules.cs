@@ -10,7 +10,7 @@ using Setup;
 namespace Implementations.Modules;
 
 public sealed class OneMaxLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     public string Name => "OneMax";
 
@@ -24,7 +24,7 @@ public sealed class OneMaxLossFactory<TChromosome> : IModuleFactory<ILossFunctio
 }
 
 public sealed class LongestRunLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     public string Name => "Longest Run";
 
@@ -39,7 +39,7 @@ public sealed class LongestRunLossFactory<TChromosome> : IModuleFactory<ILossFun
 
 public sealed class KnapsackLossFactory<TChromosome>(int itemCount)
     : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     public string Name => "Knapsack";
 
@@ -53,7 +53,7 @@ public sealed class KnapsackLossFactory<TChromosome>(int itemCount)
 }
 
 public sealed class BitFlipMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     private static readonly Parameter<double> GeneProbability = Params.Probability("geneProbability");
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");

@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.LossFunctions;
 
 public sealed class LongestRunLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     public LongestRunLossFunction()
     {

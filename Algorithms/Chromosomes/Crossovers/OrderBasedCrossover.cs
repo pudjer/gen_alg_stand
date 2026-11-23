@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.Crossovers;
 
 public sealed class OrderBasedCrossover<TSelf> : CrossoverBase<TSelf>
-    where TSelf : IOrderedChromosome<TSelf>
+    where TSelf : IGenotypeChromosome<TSelf, int>
 {
     public OrderBasedCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)

@@ -3,15 +3,14 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-public sealed class PartiallyMappedCrossover<TSelf> : CrossoverBase<TSelf>
-    where TSelf : IOrderedChromosome<TSelf>
+public sealed class PartiallyMappedCrossover : CrossoverBase<PermutationChromosome>
 {
     public PartiallyMappedCrossover(double crossoverProbability = 1.0)
         : base(crossoverProbability)
     {
     }
 
-    protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
+    protected override (PermutationChromosome First, PermutationChromosome Second) CrossPair(PermutationChromosome first, PermutationChromosome second, IRandom random)
     {
         if (first.Length != second.Length)
         {
@@ -84,7 +83,7 @@ public sealed class PartiallyMappedCrossover<TSelf> : CrossoverBase<TSelf>
         return child;
     }
 
-    private static int[] CopyGenes(TSelf chromosome, int length)
+    private static int[] CopyGenes(PermutationChromosome chromosome, int length)
     {
         int[] genes = new int[length];
         for (int i = 0; i < length; i++)

@@ -3,14 +3,13 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-public sealed class InversionCountLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IPermutationChromosome<TChromosome>
+public sealed class InversionCountLossFunction : ILossFunction<PermutationChromosome>
 {
     public InversionCountLossFunction()
     {
     }
 
-    public double Evaluate(TChromosome chromosome)
+    public double Evaluate(PermutationChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
 

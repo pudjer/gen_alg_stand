@@ -12,7 +12,7 @@ namespace Implementations.Modules;
 
 public sealed class SumTargetLossFactory<TChromosome>(long target)
     : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IIntChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, int>
 {
     public string Name => "Sum Target";
 
@@ -25,9 +25,8 @@ public sealed class SumTargetLossFactory<TChromosome>(long target)
     }
 }
 
-public sealed class IntegerArithmeticCrossoverFactory<TChromosome>
-    : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IIntChromosome<TChromosome>
+public sealed class IntegerArithmeticCrossoverFactory
+    : IModuleFactory<ICrossover<IntChromosome>>
 {
     private static readonly Parameter<double> Weight = Params.Probability("weight");
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
@@ -36,17 +35,16 @@ public sealed class IntegerArithmeticCrossoverFactory<TChromosome>
 
     public IReadOnlyList<IParameter> Parameters { get; } = [Weight, CrossoverProbability];
 
-    public ICrossover<TChromosome> Create(ParameterSet values)
+    public ICrossover<IntChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new IntegerArithmeticCrossover<TChromosome>(
+        return new IntegerArithmeticCrossover(
             values.Read(Weight, 0.5),
             values.Read(CrossoverProbability, 0.9));
     }
 }
 
-public sealed class UniformIntMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IIntChromosome<TChromosome>
+public sealed class UniformIntMutationFactory : IModuleFactory<IMutation<IntChromosome>>
 {
     private static readonly Parameter<double> GeneProbability = Params.Probability("geneProbability");
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");
@@ -55,10 +53,10 @@ public sealed class UniformIntMutationFactory<TChromosome> : IModuleFactory<IMut
 
     public IReadOnlyList<IParameter> Parameters { get; } = [GeneProbability, ChromosomeProbability];
 
-    public IMutation<TChromosome> Create(ParameterSet values)
+    public IMutation<IntChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new UniformIntMutation<TChromosome>(
+        return new UniformIntMutation(
             values.Read(GeneProbability, 0.01),
             values.Read(ChromosomeProbability, 0.9));
     }
@@ -78,7 +76,7 @@ public sealed class RandomIntPopulationFactory(int length, int minValue, int max
         ArgumentNullException.ThrowIfNull(values);
         int[] genes = Enumerable.Repeat(minValue, length).ToArray();
 
-        return new RandomIntPopulation<IntChromosome>(
+        return new RandomIntPopulation(
             values.Read(PopulationSize, 100),
             new IntChromosome(genes, minValue, maxValue));
     }

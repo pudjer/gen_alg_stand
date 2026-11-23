@@ -11,7 +11,7 @@ using Setup;
 namespace Implementations.Modules;
 
 public sealed class SphereLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Sphere";
 
@@ -25,7 +25,7 @@ public sealed class SphereLossFactory<TChromosome> : IModuleFactory<ILossFunctio
 }
 
 public sealed class RastriginLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Rastrigin";
 
@@ -39,7 +39,7 @@ public sealed class RastriginLossFactory<TChromosome> : IModuleFactory<ILossFunc
 }
 
 public sealed class RosenbrockLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Rosenbrock";
 
@@ -53,7 +53,7 @@ public sealed class RosenbrockLossFactory<TChromosome> : IModuleFactory<ILossFun
 }
 
 public sealed class AckleyLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Ackley";
 
@@ -67,7 +67,7 @@ public sealed class AckleyLossFactory<TChromosome> : IModuleFactory<ILossFunctio
 }
 
 public sealed class GriewankLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Griewank";
 
@@ -81,7 +81,7 @@ public sealed class GriewankLossFactory<TChromosome> : IModuleFactory<ILossFunct
 }
 
 public sealed class SchwefelLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Schwefel";
 
@@ -95,7 +95,7 @@ public sealed class SchwefelLossFactory<TChromosome> : IModuleFactory<ILossFunct
 }
 
 public sealed class BoothLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Booth";
 
@@ -109,7 +109,7 @@ public sealed class BoothLossFactory<TChromosome> : IModuleFactory<ILossFunction
 }
 
 public sealed class BealeLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Beale";
 
@@ -123,7 +123,7 @@ public sealed class BealeLossFactory<TChromosome> : IModuleFactory<ILossFunction
 }
 
 public sealed class HimmelblauLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Himmelblau";
 
@@ -137,7 +137,7 @@ public sealed class HimmelblauLossFactory<TChromosome> : IModuleFactory<ILossFun
 }
 
 public sealed class EasomLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Easom";
 
@@ -151,7 +151,7 @@ public sealed class EasomLossFactory<TChromosome> : IModuleFactory<ILossFunction
 }
 
 public sealed class BukinLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Bukin";
 
@@ -165,7 +165,7 @@ public sealed class BukinLossFactory<TChromosome> : IModuleFactory<ILossFunction
 }
 
 public sealed class MatyasLossFactory<TChromosome> : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Matyas";
 
@@ -180,7 +180,7 @@ public sealed class MatyasLossFactory<TChromosome> : IModuleFactory<ILossFunctio
 
 public sealed class TargetVectorLossFactory<TChromosome>(IReadOnlyList<double> target)
     : IModuleFactory<ILossFunction<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public string Name => "Target Vector";
 
@@ -193,8 +193,7 @@ public sealed class TargetVectorLossFactory<TChromosome>(IReadOnlyList<double> t
     }
 }
 
-public sealed class ArithmeticCrossoverFactory<TChromosome> : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+public sealed class ArithmeticCrossoverFactory : IModuleFactory<ICrossover<FloatChromosome>>
 {
     private static readonly Parameter<double> Weight = Params.Probability("weight");
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
@@ -203,17 +202,16 @@ public sealed class ArithmeticCrossoverFactory<TChromosome> : IModuleFactory<ICr
 
     public IReadOnlyList<IParameter> Parameters { get; } = [Weight, CrossoverProbability];
 
-    public ICrossover<TChromosome> Create(ParameterSet values)
+    public ICrossover<FloatChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new ArithmeticCrossover<TChromosome>(
+        return new ArithmeticCrossover(
             values.Read(Weight, 0.5),
             values.Read(CrossoverProbability, 0.9));
     }
 }
 
-public sealed class BlendCrossoverFactory<TChromosome> : IModuleFactory<ICrossover<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+public sealed class BlendCrossoverFactory : IModuleFactory<ICrossover<FloatChromosome>>
 {
     private static readonly Parameter<double> Alpha = Params.Double("alpha", 0);
     private static readonly Parameter<double> CrossoverProbability = Params.Probability("crossoverProbability");
@@ -222,17 +220,16 @@ public sealed class BlendCrossoverFactory<TChromosome> : IModuleFactory<ICrossov
 
     public IReadOnlyList<IParameter> Parameters { get; } = [Alpha, CrossoverProbability];
 
-    public ICrossover<TChromosome> Create(ParameterSet values)
+    public ICrossover<FloatChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new BlendCrossover<TChromosome>(
+        return new BlendCrossover(
             values.Read(Alpha, 0.5),
             values.Read(CrossoverProbability, 0.9));
     }
 }
 
-public sealed class GaussianMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+public sealed class GaussianMutationFactory : IModuleFactory<IMutation<FloatChromosome>>
 {
     private static readonly Parameter<double> GeneProbability = Params.Probability("geneProbability");
     private static readonly Parameter<double> Sigma = Params.Double("sigma", 0);
@@ -242,18 +239,17 @@ public sealed class GaussianMutationFactory<TChromosome> : IModuleFactory<IMutat
 
     public IReadOnlyList<IParameter> Parameters { get; } = [GeneProbability, Sigma, ChromosomeProbability];
 
-    public IMutation<TChromosome> Create(ParameterSet values)
+    public IMutation<FloatChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new GaussianMutation<TChromosome>(
+        return new GaussianMutation(
             values.Read(GeneProbability, 0.01),
             values.Read(Sigma, 0.1),
             values.Read(ChromosomeProbability, 0.9));
     }
 }
 
-public sealed class UniformFloatMutationFactory<TChromosome> : IModuleFactory<IMutation<TChromosome>>
-    where TChromosome : IFloatChromosome<TChromosome>
+public sealed class UniformFloatMutationFactory : IModuleFactory<IMutation<FloatChromosome>>
 {
     private static readonly Parameter<double> GeneProbability = Params.Probability("geneProbability");
     private static readonly Parameter<double> ChromosomeProbability = Params.Probability("chromosomeProbability");
@@ -262,10 +258,10 @@ public sealed class UniformFloatMutationFactory<TChromosome> : IModuleFactory<IM
 
     public IReadOnlyList<IParameter> Parameters { get; } = [GeneProbability, ChromosomeProbability];
 
-    public IMutation<TChromosome> Create(ParameterSet values)
+    public IMutation<FloatChromosome> Create(ParameterSet values)
     {
         ArgumentNullException.ThrowIfNull(values);
-        return new UniformFloatMutation<TChromosome>(
+        return new UniformFloatMutation(
             values.Read(GeneProbability, 0.01),
             values.Read(ChromosomeProbability, 0.9));
     }
@@ -285,7 +281,7 @@ public sealed class RandomFloatPopulationFactory(int length, double minValue, do
         ArgumentNullException.ThrowIfNull(values);
         double[] genes = Enumerable.Repeat(minValue, length).ToArray();
 
-        return new RandomFloatPopulation<FloatChromosome>(
+        return new RandomFloatPopulation(
             values.Read(PopulationSize, 100),
             new FloatChromosome(genes, minValue, maxValue));
     }

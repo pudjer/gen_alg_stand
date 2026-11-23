@@ -148,36 +148,39 @@ sequenceDiagram
 ### 4.1. Иерархия хромосом
 
 Хромосомы построены на **F-bounded полиморфизме** (`TSelf`), что позволяет
-операторам возвращать конкретный тип без приведения.
+операторам возвращать конкретный тип без приведения. Иерархия состоит из двух
+интерфейсов: базового `IChromosome<TSelf>` и `IGenotypeChromosome<TSelf, TGene>`.
+Остальные интерфейсы-маркеры (`IBinaryChromosome`, `IIntChromosome`,
+`IFloatChromosome`, `INumericChromosome`, `IOrderedChromosome`,
+`IPermutationChromosome`) удалены: у каждого из них была ровно одна реализация,
+и они не добавляли ничего к `IGenotypeChromosome`.
 
 ```mermaid
 graph TD
     ICh["IChromosome&lt;TSelf&gt;<br/>Clone()"]
-    IGen["IGenotypeChromosome&lt;TSelf, TGene&gt;<br/>Length, Genes, indexer"]
+    IGen["IGenotypeChromosome&lt;TSelf, TGene&gt;<br/>Length, Genes, indexer, WithGenes"]
     ICh --> IGen
-    IGen --> IBin["IBinaryChromosome&lt;TSelf&gt;<br/>TGene = bool"]
-    IGen --> INum["INumericChromosome&lt;TSelf, TNumber&gt;<br/>MinValue, MaxValue"]
-    INum --> IInt["IIntChromosome&lt;TSelf&gt;"]
-    INum --> IFlt["IFloatChromosome&lt;TSelf&gt;"]
-    IGen --> IOrd["IOrderedChromosome&lt;TSelf&gt;<br/>TGene = int"]
-    IOrd --> IPerm["IPermutationChromosome&lt;TSelf&gt;"]
-
-    IBin -.-> BC["BinaryChromosome"]
-    IInt -.-> IC["IntChromosome"]
-    IFlt -.-> FC["FloatChromosome"]
-    IPerm -.-> PC["PermutationChromosome"]
+    IGen -.-> BC["BinaryChromosome<br/>TGene = bool"]
+    IGen -.-> IC["IntChromosome<br/>TGene = int"]
+    IGen -.-> FC["FloatChromosome<br/>TGene = double"]
+    IGen -.-> PC["PermutationChromosome<br/>TGene = int"]
 ```
 
-Такая иерархия даёт три уровня ограничений:
+Ограничения задаются двумя способами:
 
-1. `IGenotypeChromosome<TSelf, TGene>` — общий доступ к генам (нужен
-   `SinglePointCrossover`, `UniformCrossover`).
-2. `INumericChromosome` — доступ к `MinValue`/`MaxValue` (нужен
-   `GaussianMutation`, `BlendCrossover`).
-3. `IPermutationChromosome` — гарантия перестановки (нужен `OrderCrossover`,
-   `SwapMutation`).
+1. `IGenotypeChromosome<TSelf, TGene>` — общий доступ к генам. На нём держатся
+   `SinglePointCrossover`, `TwoPointCrossover`, `UniformCrossover`, а также
+   `OrderCrossover`/`OrderBasedCrossover`, `SwapMutation` и родственные
+   операции над int-последовательностями.
+2. Конкретный тип хромосомы — когда нужен доступ к `MinValue`/`MaxValue`
+   (`FloatChromosome`, `IntChromosome`) или к гарантии перестановки
+   (`PermutationChromosome`). На этом стоят numeric-операторы, `CycleCrossover`,
+   `PartiallyMappedCrossover`, TSP/N-Queens/Inversion Count и соответствующие
+   фабрики начальной популяции.
 
-Компилятор не даст применить `OrderCrossover` к `FloatChromosome` — это
+Компилятор не даст применить, например, `OrderCrossover` к `FloatChromosome`
+(`IGenotypeChromosome<FloatChromosome, double>` несовместим с
+`IGenotypeChromosome<T, int>`) или `TspLossFunction` к `IntChromosome`. Это
 проверяется на этапе компиляции, а не в рантайме.
 
 ### 4.2. Иерархия операторов

@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.LossFunctions;
 
 public sealed class TargetVectorLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     private readonly double[] _target;
 

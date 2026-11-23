@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.LossFunctions;
 
 public sealed class BoothLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public BoothLossFunction()
     {
@@ -29,7 +29,7 @@ public sealed class BoothLossFunction<TChromosome> : ILossFunction<TChromosome>
 }
 
 public sealed class BealeLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public BealeLossFunction()
     {
@@ -55,7 +55,7 @@ public sealed class BealeLossFunction<TChromosome> : ILossFunction<TChromosome>
 }
 
 public sealed class HimmelblauLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public HimmelblauLossFunction()
     {
@@ -80,7 +80,7 @@ public sealed class HimmelblauLossFunction<TChromosome> : ILossFunction<TChromos
 }
 
 public sealed class EasomLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public EasomLossFunction()
     {
@@ -106,7 +106,7 @@ public sealed class EasomLossFunction<TChromosome> : ILossFunction<TChromosome>
 }
 
 public sealed class BukinLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public BukinLossFunction()
     {
@@ -131,7 +131,7 @@ public sealed class BukinLossFunction<TChromosome> : ILossFunction<TChromosome>
 }
 
 public sealed class MatyasLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public MatyasLossFunction()
     {

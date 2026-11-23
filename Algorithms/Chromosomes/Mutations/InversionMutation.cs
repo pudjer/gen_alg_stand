@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.Mutations;
 
 public sealed class InversionMutation<TSelf> : PermutationMutationBase<TSelf>
-    where TSelf : IOrderedChromosome<TSelf>
+    where TSelf : IGenotypeChromosome<TSelf, int>
 {
     public InversionMutation(double chromosomeProbability = 0.1)
         : base(chromosomeProbability)

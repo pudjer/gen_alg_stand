@@ -4,13 +4,12 @@ using Core.Contracts;
 
 namespace Algorithms.InitialPopulations;
 
-public sealed class RandomPermutationPopulation<TChromosome> : IInitialPopulation<TChromosome>
-    where TChromosome : IPermutationChromosome<TChromosome>
+public sealed class RandomPermutationPopulation : IInitialPopulation<PermutationChromosome>
 {
     private readonly int _size;
-    private readonly TChromosome _template;
+    private readonly PermutationChromosome _template;
 
-    public RandomPermutationPopulation(int size, TChromosome template)
+    public RandomPermutationPopulation(int size, PermutationChromosome template)
     {
         ArgumentNullException.ThrowIfNull(template);
         ArgumentOutOfRangeException.ThrowIfLessThan(size, 1);
@@ -19,13 +18,13 @@ public sealed class RandomPermutationPopulation<TChromosome> : IInitialPopulatio
         _template = template;
     }
 
-    public IReadOnlyList<TChromosome> Create(IRandom random)
+    public IReadOnlyList<PermutationChromosome> Create(IRandom random)
     {
         ArgumentNullException.ThrowIfNull(random);
 
         int length = _template.Length;
 
-        var population = new List<TChromosome>(_size);
+        var population = new List<PermutationChromosome>(_size);
         for (int i = 0; i < _size; i++)
         {
             var genes = new int[length];

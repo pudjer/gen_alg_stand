@@ -43,13 +43,13 @@ public sealed class TspProblemFactory(int seed = 1337) : PermutationProblemFacto
     protected override IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
         int length) =>
     [
-        new TspLossFactory<PermutationChromosome>(
+        new TspLossFactory(
             TspCityGenerator.Create(length, _seed + length, TspLayout.Random),
             "TSP (random)"),
-        new TspLossFactory<PermutationChromosome>(
+        new TspLossFactory(
             TspCityGenerator.Create(length, _seed + length, TspLayout.Circle),
             "TSP (circle)"),
-        new TspLossFactory<PermutationChromosome>(
+        new TspLossFactory(
             TspCityGenerator.Create(length, _seed + length, TspLayout.Line),
             "TSP (line)"),
     ];
@@ -60,7 +60,7 @@ public sealed class NQueensProblemFactory : PermutationProblemFactoryBase
     protected override IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
         int length) =>
     [
-        new NQueensLossFactory<PermutationChromosome>(),
+        new NQueensLossFactory(),
     ];
 }
 
@@ -69,6 +69,6 @@ public sealed class InversionCountProblemFactory : PermutationProblemFactoryBase
     protected override IReadOnlyList<IModuleFactory<ILossFunction<PermutationChromosome>>> CreateLosses(
         int length) =>
     [
-        new InversionCountLossFactory<PermutationChromosome>(),
+        new InversionCountLossFactory(),
     ];
 }

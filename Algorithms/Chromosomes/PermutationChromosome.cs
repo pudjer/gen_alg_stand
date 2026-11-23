@@ -3,7 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Chromosomes;
 
-public sealed class PermutationChromosome : IPermutationChromosome<PermutationChromosome>
+public sealed class PermutationChromosome : IGenotypeChromosome<PermutationChromosome, int>
 {
     private readonly int[] _genes;
     private readonly ReadOnlyCollection<int> _genesView;

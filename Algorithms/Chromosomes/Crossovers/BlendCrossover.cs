@@ -3,8 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Crossovers;
 
-public sealed class BlendCrossover<TSelf> : CrossoverBase<TSelf>
-    where TSelf : IFloatChromosome<TSelf>
+public sealed class BlendCrossover : CrossoverBase<FloatChromosome>
 {
     private readonly double alpha;
 
@@ -24,7 +23,10 @@ public sealed class BlendCrossover<TSelf> : CrossoverBase<TSelf>
         this.alpha = alpha;
     }
 
-    protected override (TSelf First, TSelf Second) CrossPair(TSelf first, TSelf second, IRandom random)
+    protected override (FloatChromosome First, FloatChromosome Second) CrossPair(
+        FloatChromosome first,
+        FloatChromosome second,
+        IRandom random)
     {
         if (first.Length != second.Length)
         {

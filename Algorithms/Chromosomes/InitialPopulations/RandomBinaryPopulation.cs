@@ -5,7 +5,7 @@ using Core.Contracts;
 namespace Algorithms.InitialPopulations;
 
 public sealed class RandomBinaryPopulation<TChromosome> : IInitialPopulation<TChromosome>
-    where TChromosome : IBinaryChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, bool>
 {
     private readonly int _size;
     private readonly TChromosome _template;

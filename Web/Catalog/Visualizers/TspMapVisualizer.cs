@@ -10,7 +10,7 @@ public sealed class TspMapVisualizer : IProblemVisualizer<PermutationChromosome>
 
     public Visualization? Build(VisualizationContext<PermutationChromosome> context)
     {
-        if (context.Loss is not TspLossFunction<PermutationChromosome> tsp)
+        if (context.Loss is not TspLossFunction tsp)
         {
             return null;
         }

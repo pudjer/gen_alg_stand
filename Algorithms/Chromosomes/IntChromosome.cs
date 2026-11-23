@@ -3,7 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Chromosomes;
 
-public sealed class IntChromosome : IIntChromosome<IntChromosome>
+public sealed class IntChromosome : IGenotypeChromosome<IntChromosome, int>
 {
     private readonly int[] _genes;
     private readonly ReadOnlyCollection<int> _genesView;

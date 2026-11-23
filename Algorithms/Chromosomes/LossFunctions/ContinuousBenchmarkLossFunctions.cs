@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.LossFunctions;
 
 public sealed class AckleyLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public AckleyLossFunction()
     {
@@ -38,7 +38,7 @@ public sealed class AckleyLossFunction<TChromosome> : ILossFunction<TChromosome>
 }
 
 public sealed class GriewankLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public GriewankLossFunction()
     {
@@ -69,7 +69,7 @@ public sealed class GriewankLossFunction<TChromosome> : ILossFunction<TChromosom
 }
 
 public sealed class SchwefelLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IFloatChromosome<TChromosome>
+    where TChromosome : IGenotypeChromosome<TChromosome, double>
 {
     public SchwefelLossFunction()
     {

@@ -3,8 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.LossFunctions;
 
-public sealed class TspLossFunction<TChromosome> : ILossFunction<TChromosome>
-    where TChromosome : IPermutationChromosome<TChromosome>
+public sealed class TspLossFunction : ILossFunction<PermutationChromosome>
 {
     private readonly double[,] _distances;
 
@@ -51,7 +50,7 @@ public sealed class TspLossFunction<TChromosome> : ILossFunction<TChromosome>
 
     public IReadOnlyList<TspCity> Cities { get; }
 
-    public double Evaluate(TChromosome chromosome)
+    public double Evaluate(PermutationChromosome chromosome)
     {
         ArgumentNullException.ThrowIfNull(chromosome);
 

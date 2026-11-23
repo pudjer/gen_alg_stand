@@ -4,7 +4,7 @@ using Core.Contracts;
 namespace Algorithms.Mutations;
 
 public abstract class PermutationMutationBase<TSelf> : MutationBase<TSelf>
-    where TSelf : IOrderedChromosome<TSelf>
+    where TSelf : IGenotypeChromosome<TSelf, int>
 {
     protected PermutationMutationBase(double chromosomeProbability = 0.1)
         : base(chromosomeProbability)

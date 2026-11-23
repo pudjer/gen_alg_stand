@@ -3,7 +3,7 @@ using Core.Contracts;
 
 namespace Algorithms.Chromosomes;
 
-public sealed class FloatChromosome : IFloatChromosome<FloatChromosome>
+public sealed class FloatChromosome : IGenotypeChromosome<FloatChromosome, double>
 {
     private readonly double[] _genes;
     private readonly ReadOnlyCollection<double> _genesView;
